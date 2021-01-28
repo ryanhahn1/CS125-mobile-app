@@ -4,46 +4,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 
-import * as SQLite from 'expo-sqlite';
-
-const db = SQLite.openDatabase('db.db');
-
 export default function TabOneScreen() {
-  // const [text, setText] = React.useState(null)
-  // const [forceUpdate, forceUpdateId] = useForceUpdate()
-  
-  // React.useEffect(() => {
-  //   db.transaction(tx => {
-  //     tx.executeSql(
-  //       'create table if not exists users (uid integer primary key, user_name text unique);'
-  //     );
-  //     tx.executeSql('insert into users (uid, user_name values (0, "user")');
-  //   });
-  // }, []); 
-
-  // const add = (text) => {
-  //   // is text empty?
-  //   if (text === null || text === '') {
-  //     return false;
-  //   }
-
-  //   db.transaction(
-  //     tx => {
-  //       tx.executeSql('insert into users (uid, user_name) values (0, ?)', [text]);
-  //       tx.executeSql('select * from users', [], (_, { rows }) =>
-  //         console.log(JSON.stringify(rows))
-  //       );
-  //     },
-  //     null,
-  //     forceUpdate
-  //   );
-  // }
-
   const [name, setName] = useState<any | null>(null);
 
   const save = async () => {
     try {
-      await AsyncStorage.setItem("MyName", name);
+      await AsyncStorage.setItem(
+        name,
+        JSON.stringify(
+          {entries: ['sample data 1', 'sample data 2']}
+          )
+        );
     } catch (err) {
       alert(err);
     }
@@ -51,9 +22,9 @@ export default function TabOneScreen() {
 
   const load = async () => {
     try {
-      let name = await AsyncStorage.getItem("MyName");
-      if (name !== null) {
-        setName(name);
+      let userdata = await AsyncStorage.getItem(name);
+      if (userdata !== null) {
+        
       }
     } catch (err) {
       alert(err);
@@ -62,7 +33,7 @@ export default function TabOneScreen() {
 
   const remove = async () => {
     try {
-      await AsyncStorage.removeItem("MyName")
+      await AsyncStorage.removeItem(name)
     } catch (err) {
       alert(err)
     } finally {
@@ -80,7 +51,7 @@ export default function TabOneScreen() {
         style={ {width: "100%", height: 200}} 
         resizeMode="contain"/>
       <Text style={{ height: 30}}>{name}</Text>      
-      <Text style={styles.name}>What's your name</Text>
+      <Text style={styles.name}>What's your name test</Text>
       <TextInput style={styles.input} onChangeText = {(text) => setName(text)} />
 
       <TouchableOpacity style={styles.button} onPress={() => save()}>

@@ -7,15 +7,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
-export default function TabTwoScreen() {
+export default function TabThreeScreen() {
   const [name, setName] = useState<any | null>(null);
-  const [data, setData] = useState([]);
-  const load_user_data = async () => {
+  const [data, setData] = useState<any | null>(null);
+  const set_user_data = async () => {
     try {
       let userdata = await AsyncStorage.getItem(name);
-      if (userdata !== null) {
-        var parsed = JSON.parse(userdata).entries;
-        setData(parsed);
+      if (userdata !== null && userdata !== "") {
+        var parsedList = JSON.parse(userdata).entries;
+        parsedList.push(data)
+        AsyncStorage.setItem(name, JSON.stringify({entries: parsedList}))
       }
     } catch (err) {
       alert(err);
@@ -24,16 +25,13 @@ export default function TabTwoScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.name}>View your data! yep</Text>
+      <Text style={styles.name}>Input name fill</Text>
       <TextInput style={styles.input} onChangeText = {(text) => setName(text)} />
-      <TouchableOpacity style={styles.button} onPress={() => load_user_data()}>
-        <Text style={{ color: "white"}}>Load my data!</Text>
+      <Text style={styles.name}>Input string data fill</Text>
+      <TextInput style={styles.input} onChangeText = {(text) => setData(text)} />
+      <TouchableOpacity style={styles.button} onPress={() => set_user_data()}>
+        <Text style={{ color: "white"}}>Add my data!</Text>
       </TouchableOpacity>
-      <View>
-        {data.map((item) => (
-          <Text>{item}</Text>
-        ))}
-      </View>
     </View>
   );
 }
