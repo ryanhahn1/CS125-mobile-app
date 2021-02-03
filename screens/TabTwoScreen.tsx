@@ -24,7 +24,7 @@ export default function TabTwoScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.name}>View your data! yep</Text>
+      <Text style={styles.name}>View your data!</Text>
       <TextInput style={styles.input} onChangeText = {(text) => setName(text)} />
       <TouchableOpacity style={styles.button} onPress={() => load_user_data()}>
         <Text style={{ color: "white"}}>Load my data!</Text>

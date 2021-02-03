@@ -25,9 +25,9 @@ export default function TabThreeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.name}>Input name fill</Text>
+      <Text style={styles.name}>Input name</Text>
       <TextInput style={styles.input} onChangeText = {(text) => setName(text)} />
-      <Text style={styles.name}>Input string data fill</Text>
+      <Text style={styles.name}>Input string data</Text>
       <TextInput style={styles.input} onChangeText = {(text) => setData(text)} />
       <TouchableOpacity style={styles.button} onPress={() => set_user_data()}>
         <Text style={{ color: "white"}}>Add my data!</Text>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Button} from 'react-native';
+import { NavigationContainer, useNavigation } from "@react-navigation/native"
+import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import EditScreenInfo from '../components/EditScreenInfo';
 
 export default function TabOneScreen() {
   const [name, setName] = useState<any | null>(null);
-
+  const navigation = useNavigation();
   const save = async () => {
     try {
       await AsyncStorage.setItem(
@@ -62,6 +62,12 @@ export default function TabOneScreen() {
         <Text style={{ color: "white"}}>Remove my name!</Text>
       </TouchableOpacity>
 
+      <Button 
+          title="go to Login" 
+          onPress={() => {
+              navigation.navigate('Login');
+          }}
+      />
     </View>
   );
 }
@@ -103,6 +109,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 32,
     marginTop: 16,
+    marginBottom:16,
     marginHorizontal: 32,
     borderRadius: 6,
   },
