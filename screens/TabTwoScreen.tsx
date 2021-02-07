@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, FlatList, Alert} from 'react-native';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 //import { Text, View } from '../components/Themed';
@@ -8,32 +8,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function TabTwoScreen() {
-  const [name, setName] = useState<any | null>(null);
-  const [data, setData] = useState([]);
-  const load_user_data = async () => {
-    try {
-      let userdata = await AsyncStorage.getItem(name);
-      if (userdata !== null) {
-        var parsed = JSON.parse(userdata).entries;
-        setData(parsed);
-      }
-    } catch (err) {
-      alert(err);
-    }
-  };
+  //const [name, setName] = useState<any | null>(null);
+  const [data, setData] = useState([] as any[]);
+  
 
   return (
     <View style={styles.container}>
-      <Text style={styles.name}>View your data! yep</Text>
-      <TextInput style={styles.input} onChangeText = {(text) => setName(text)} />
-      <TouchableOpacity style={styles.button} onPress={() => load_user_data()}>
-        <Text style={{ color: "white"}}>Load my data!</Text>
-      </TouchableOpacity>
-      <View>
-        {data.map((item) => (
-          <Text>{item}</Text>
-        ))}
-      </View>
+      <Text style={styles.name}>Google Fit Tab!</Text>
     </View>
   );
 }

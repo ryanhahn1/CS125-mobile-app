@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert} from 'react-native';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 //import { Text, View } from '../components/Themed';
@@ -8,32 +8,85 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function TabThreeScreen() {
-  const [name, setName] = useState<any | null>(null);
-  const [data, setData] = useState<any | null>(null);
-  const set_user_data = async () => {
+  //const [name, setName] = useState<any | null>(null);
+  const [input_weight, setWeight] = useState<any | null>(null);
+  const [data, setData] = useState([] as any[]);
+  
+  async function set_user_data() {
     try {
-      let userdata = await AsyncStorage.getItem(name);
-      if (userdata !== null && userdata !== "") {
-        var parsedList = JSON.parse(userdata).entries;
-        parsedList.push(data)
-        AsyncStorage.setItem(name, JSON.stringify({entries: parsedList}))
+      let current_user = await AsyncStorage.getItem("currentUser");
+      if (current_user !== null && current_user !== ""){
+        let userdata = await AsyncStorage.getItem(current_user);
+        if (userdata !== null && userdata !== "") {
+          var parsedList = JSON.parse(userdata).entries;
+          let day = new Date();
+          parsedList.push({weight: input_weight, date : day.getDate(), month : day.getMonth()})
+          AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList}))
+          Alert.alert("I tried", current_user);
+        }
+        
+      }
+      else if (current_user == null){
+        Alert.alert("Log in first", "current user is null");
+      }
+      else{
+        Alert.alert("Log in first", "current user is empty string");
       }
     } catch (err) {
       alert(err);
     }
   };
-
+  const load_user_data = async () => {
+    try {
+      let current_user = await AsyncStorage.getItem("currentUser");
+      if (current_user !== null && current_user !== ""){
+        let userdata = await AsyncStorage.getItem(current_user);
+        if (userdata !== null) {
+          var parsed = JSON.parse(userdata).entries;
+          setData(parsed);
+        }
+        Alert.alert("I tried", current_user);
+      }
+      else if (current_user == null){
+        Alert.alert("Log in first", "current user is null");
+      }
+      else{
+        Alert.alert("Log in first", "current user is empty string");
+      }
+      
+    } catch (err) {
+      alert(err);
+    }
+  };
   return (
     <View style={styles.container}>
-      <Text style={styles.name}>Input name fill</Text>
-      <TextInput style={styles.input} onChangeText = {(text) => setName(text)} />
-      <Text style={styles.name}>Input string data fill</Text>
-      <TextInput style={styles.input} onChangeText = {(text) => setData(text)} />
+      <Text style={styles.name}>Weight Tab!</Text>
+      {/* <TextInput style={styles.input} onChangeText = {(text) => setName(text)} /> */}
+      <Text style={styles.name}>Input Your Current Weight!</Text>
+      <TextInput style={styles.input} onChangeText = {(text) => setWeight(text)} />
       <TouchableOpacity style={styles.button} onPress={() => set_user_data()}>
         <Text style={{ color: "white"}}>Add my data!</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={() => load_user_data()}>
+        <Text style={{ color: "white"}}>Load my data!</Text>
+      </TouchableOpacity>
+      {/* <FlatList
+          data={data}
+          renderItem={( { item } ) => (
+            <View>
+              <Text>{"Weight: " + item.weight}</Text>
+              <Text>{item.month + "/" + item.date}</Text>
+            </View>
+            )
+          }
+          ></FlatList> */}
+      {data.map((item, idx) => (
+          <Text>Key: {idx + 1} Date: {item.date} {item.month} Weight: {item.weight}</Text>
+        ))}
     </View>
   );
+  // }
+  
 }
 
 const styles = StyleSheet.create({

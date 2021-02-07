@@ -1,75 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Button} from 'react-native';
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 
 export default function TabOneScreen() {
-  const [name, setName] = useState<any | null>(null);
-
-  const save = async () => {
+  const navigation = useNavigation();
+  //const [current_user, setCurrent_user] = React.useState(await AsyncStorage.getItem("currentUser"));
+  const logout = async () => {
     try {
-      await AsyncStorage.setItem(
-        name,
-        JSON.stringify(
-          {entries: ['sample data 1', 'sample data 2']}
-          )
-        );
+      await AsyncStorage.removeItem("currentUser");
+      navigation.goBack();
     } catch (err) {
       alert(err);
     }
   };
 
-  const load = async () => {
-    try {
-      let userdata = await AsyncStorage.getItem(name);
-      if (userdata !== null) {
-        
-      }
-    } catch (err) {
-      alert(err);
-    }
-  };
-
-  const remove = async () => {
-    try {
-      await AsyncStorage.removeItem(name)
-    } catch (err) {
-      alert(err)
-    } finally {
-      setName("")
-    }
-  }
-
-  useEffect(()=> {
-    load();
-  }, []);
   return (
     <View style={styles.container}>
-      <Image 
-        source={require("../assets/images/welcome.png")} 
-        style={ {width: "100%", height: 200}} 
-        resizeMode="contain"/>
-      <Text style={{ height: 30}}>{name}</Text>      
-      <Text style={styles.name}>What's your name test</Text>
-      <TextInput style={styles.input} onChangeText = {(text) => setName(text)} />
-
-      <TouchableOpacity style={styles.button} onPress={() => save()}>
-        <Text style={{ color: "white"}}>Save my name!</Text>
+      <Text style={styles.name}>Food Tab!</Text>
+      <Text>I added a log out button here for convenience. I'll move it to a proper place later.</Text>
+      <TouchableOpacity style={styles.button} onPress={() => logout()}>
+        <Text style={{ color: "white"}}>Log out!</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={() => remove()}>
-        <Text style={{ color: "white"}}>Remove my name!</Text>
-      </TouchableOpacity>
-
     </View>
   );
 }
 
-// function useForceUpdate() {
-//   const [value, setValue] = useState(0);
-//   return [() => setValue(value + 1), value];
-// }
 
 const styles = StyleSheet.create({
   container: {
