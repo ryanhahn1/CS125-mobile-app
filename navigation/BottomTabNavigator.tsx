@@ -11,7 +11,9 @@ import useColorScheme from '../hooks/useColorScheme';
 import TabOneScreen from '../screens/TabOneScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
 import TabThreeScreen from '../screens/TabThreeScreen';
-import { BottomTabParamList, TabOneParamList, TabTwoParamList, TabThreeParamList, AppParamList } from '../types';
+import ProfileEditScreen from '../screens/ProfileEditScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import { BottomTabParamList, TabOneParamList, TabTwoParamList, TabThreeParamList, AppParamList, ProfileParamList } from '../types';
 
 
 import { Center } from '../src/Center';
@@ -27,7 +29,10 @@ function HomeScreen() {
       await AsyncStorage.setItem(
         name,
         JSON.stringify(
-          {entries: []}
+          {entries: [],
+           weight: 0,
+           height: 0,
+           goal: 'lose weight'}
           )
         );
     } catch (err) {
@@ -92,6 +97,7 @@ function HomeScreen() {
       
   );
 }
+
 const EntireApp = createStackNavigator<AppParamList>();
 
 export default function AppNavigator() {
@@ -141,13 +147,10 @@ function BottomTabNavigator() {
         //   tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
         // }}
       />
-      {/* <BottomTab.Screen
-        name="Home"
-        component={HomeScreen}
-        // options={{
-        //   tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
-        // }}
-      /> */}
+      <BottomTab.Screen
+        name="Profile"
+        component={ProfileNavigator}
+      />
     </BottomTab.Navigator>
   );
 }
@@ -242,6 +245,25 @@ function TabThreeNavigator() {
         options={{ header: () => null }}
       />
     </TabThreeStack.Navigator>
+  );
+}
+
+const ProfileStack = createStackNavigator<ProfileParamList>();
+
+function ProfileNavigator() {
+  return (
+    <ProfileStack.Navigator>
+      <ProfileStack.Screen 
+        name="Profile"
+        component={ProfileScreen}
+        options={{ header: () => null }}
+      />
+      <ProfileStack.Screen 
+        name="ProfileEdit"
+        component={ProfileEditScreen}
+        options={{ header: () => null }}
+      />
+    </ProfileStack.Navigator>
   );
 }
 
