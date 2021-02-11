@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, FlatList, Alert} from 'react-native';
+import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, FlatList, Alert, Dimensions} from 'react-native';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 //import { Text, View } from '../components/Themed';
@@ -8,8 +8,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import GoogleFit, { Scopes } from 'react-native-google-fit'
 
 
+import FitHealthStat from "../components/HealthStatus";
+import FitExerciseStat from "../components/ExerciseStatus";
+import FitChart from "../components/FitChart";
 
-export default function TabTwoScreen() {
+
+const { width } = Dimensions.get("screen");
+
+export default function TabTwoScreen(){
   //const [name, setName] = useState<any | null>(null);
   const [data, setData] = useState([] as any[]);
   const options = {
@@ -18,6 +24,8 @@ export default function TabTwoScreen() {
       Scopes.FITNESS_BODY_READ,
     ],
   }
+
+
   GoogleFit.authorize(options)
       .then((res) => {
         console.log('authorized >>>', res)
@@ -26,12 +34,121 @@ export default function TabTwoScreen() {
         console.log('err >>> ', err)
       })
 
+
+    /// --- 
+
+  GoogleFit.getDailyStepCountSamples(opt)
+      .then((res) => {
+        console.log('Daily steps >>> ', res)
+      })
+      .catch((err) => {console.warn(err)
+      });
+
+
+    // GoogleFit.getDailySteps(opt).then().catch()
+    // GoogleFit.getWeeklySteps(data, 0).then().catch() 
+    // determine the first day of week, 0 == Sunday, 1==Monday, etc.
+
+    // <Text style={styles.name}>Data: {opt.startDate} </Text>
+    // <Text style={styles.name}>Steps: {opt.endDate} </Text>
+    
+
   return (
     <View style={styles.container}>
+
       <Text style={styles.name}>Google Fit Tab!</Text>
+    
+      <View
+      style={{
+        flex: 1,
+        backgroundColor: "#1f2026",
+        paddingTop: 5,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          marginLeft: width * 0.15,
+          marginRight: width * 0.15,
+          marginBottom: width * 0.05,
+        }}
+      > 
+
+        <FitHealthStat
+          iconBackgroundColor="#183b57"
+          iconColor="#0e8df2"
+          actual="75"
+          over=" / 100"
+          type="Move Min"
+        />
+        <FitHealthStat
+          iconBackgroundColor="#124b41"
+          iconColor="#03ddb3"
+          actual="30"
+          over=" / 20"
+          type="Heart Pts"
+          doubleIcon
+        />
+      </View>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          justifyContent: "space-evenly",
+          marginLeft: width * 0.1,
+          marginRight: width * 0.1,
+          marginBottom: width * 0.05,
+        }}
+      >
+        <View>
+          <FitExerciseStat quantity="8225 " type="steps " />
+        </View>
+        <View>
+          <Text style={{ color: "#9a9ba1", fontSize: 40, fontWeight: "100" }}>
+            |
+          </Text>
+        </View>
+        <View>
+          <FitExerciseStat quantity="6432 " type="cal " />
+        </View>
+        <View>
+          <Text style={{ color: "#9a9ba1", fontSize: 40, fontWeight: "100" }}>
+            |
+          </Text>
+        </View>
+        <View>
+          <FitExerciseStat quantity="5.2 " type="miles " />
+        </View>
+      </View>
     </View>
+
+
+    
+    
+    
+    </View>
+
+      
+        
   );
 }
+
+const opt = {
+  startDate: "2017-01-01T00:00:17.971Z", // required ISO8601Timestamp
+  endDate: new Date().toISOString(), // required ISO8601Timestamp
+  // bucketUnit: "DAY", // optional - default "DAY". Valid values: "NANOSECOND" | "MICROSECOND" | "MILLISECOND" | "SECOND" | "MINUTE" | "HOUR" | "DAY"
+  // bucketInterval: 1, // optional - default 1. 
+};
+
+
+
+
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -69,3 +186,25 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
 });
+
+const sleepData = {
+  labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  datasets: [
+    {
+      data: [9, 6, 6.5, 8, 4, 7, 8],
+      baseline: 8
+    }
+  ]
+};
+
+const stepsData = {
+  labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  datasets: [
+    {
+      data: [10000, 9000, 2000, 3000, 8000, 11000, 10500, 1000],
+      baseline: 10000
+    }
+  ]
+};
+
+
