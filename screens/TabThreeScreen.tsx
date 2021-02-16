@@ -19,9 +19,11 @@ export default function TabThreeScreen() {
         let userdata = await AsyncStorage.getItem(current_user);
         if (userdata !== null && userdata !== "") {
           var parsedList = JSON.parse(userdata).entries;
+          var weight = JSON.parse(userdata).weight;
+          var height = JSON.parse(userdata).height;
           let day = new Date();
           parsedList.push({weight: input_weight, date : day.getDate(), month : day.getMonth()})
-          AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList}))
+          AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, weight: weight, height: height}))
           Alert.alert("I tried", current_user);
         }
         

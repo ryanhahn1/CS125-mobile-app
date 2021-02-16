@@ -5,12 +5,26 @@ import EditScreenInfo from '../components/EditScreenInfo';
 //import { Text, View } from '../components/Themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import GoogleFit, { Scopes } from 'react-native-google-fit'
+
 
 
 export default function TabTwoScreen() {
   //const [name, setName] = useState<any | null>(null);
   const [data, setData] = useState([] as any[]);
-  
+  const options = {
+    scopes: [
+      Scopes.FITNESS_ACTIVITY_READ,
+      Scopes.FITNESS_BODY_READ,
+    ],
+  }
+  GoogleFit.authorize(options)
+      .then((res) => {
+        console.log('authorized >>>', res)
+      })
+      .catch((err) => {
+        console.log('err >>> ', err)
+      })
 
   return (
     <View style={styles.container}>
