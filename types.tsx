@@ -14,6 +14,7 @@ export type BottomTabParamList = {
   TabTwo: undefined;
   TabThree: undefined;
   Profile: undefined;
+  Recommendation: undefined;
 };
 
 export type TabOneParamList = {

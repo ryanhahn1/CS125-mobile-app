@@ -13,30 +13,6 @@ export default function ProfileEditScreen() {
   const [goal, setGoal] = useState<any | null>(null);
   var [input_height, setHeight] = useState<any | null>(null);
   
-  async function set_user_height() {
-    let current_user = await AsyncStorage.getItem("currentUser");
-    if (current_user !== null && current_user !== ""){
-      let userdata = await AsyncStorage.getItem(current_user);
-      if (userdata !== null && userdata !== "") {
-        var parsedList = JSON.parse(userdata).entries;
-        var weight = JSON.parse(userdata).weight;
-        var goal = JSON.parse(userdata).goal;
-        AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, weight: weight, height: input_height, goal: goal}))
-      }
-    }
-  };
-  async function set_user_weight() {
-    let current_user = await AsyncStorage.getItem("currentUser");
-    if (current_user !== null && current_user !== ""){
-      let userdata = await AsyncStorage.getItem(current_user);
-      if (userdata !== null && userdata !== "") {
-        var parsedList = JSON.parse(userdata).entries;
-        var height = JSON.parse(userdata).height;
-        var goal = JSON.parse(userdata).goal;
-        AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, weight: input_weight, height: height, goal: goal}))
-      }
-    }
-  };
   const set_user_goal = async (Goal : string) => {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
@@ -56,14 +32,10 @@ export default function ProfileEditScreen() {
     if (current_user !== null && current_user !== ""){
       let userdata = await AsyncStorage.getItem(current_user);
       if (userdata !== null && userdata !== "") {
-        console.log("before weight", weight);
-        console.log("before height", height);
         var parsedList = JSON.parse(userdata).entries;
         var weight = input_weight == null ? JSON.parse(userdata).weight : input_weight;
         var height = input_height == null ? JSON.parse(userdata).height : input_height;
         var goal = JSON.parse(userdata).goal;
-        console.log("after weight", weight);
-        console.log("after height", height);
         AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, weight: weight, height: height, goal: goal}))
       }
     }
@@ -90,22 +62,10 @@ export default function ProfileEditScreen() {
       />
       <Text style={styles.name}>Input Your Current Weight in lbs!</Text>
       <TextInput style={styles.input} onChangeText = {(text) => setWeight(text)} />
-      {/* <TouchableOpacity style={styles.button} onPress={() => set_user_weight()}>
-        <Text style={{ color: "white"}}>Save!</Text>
-      </TouchableOpacity> */}
-
       <Text style={styles.name}>Input Your Current Height in cm!</Text>
       <TextInput style={styles.input} onChangeText = {(text) => setHeight(text)} />
-      {/* <TouchableOpacity style={styles.button} onPress={() => set_user_height()}>
-        <Text style={{ color: "white"}}>Save!</Text>
-      </TouchableOpacity> */}
-
-      {/* <Text>current weight: {input_weight}</Text>
-      <Text>current height: {input_height}</Text>
-      <Text>current goal: {goal}</Text> */}
-
       <TouchableOpacity style={styles.button} onPress={() => save_user_info()}>
-        <Text style={{ color: "white"}}>Save profile</Text>
+      <Text style={{ color: "white"}}>Save profile</Text>
       </TouchableOpacity>
     </View>
   );  

@@ -13,15 +13,18 @@ import TabTwoScreen from '../screens/TabTwoScreen';
 import TabThreeScreen from '../screens/TabThreeScreen';
 import ProfileEditScreen from '../screens/ProfileEditScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import RecommendationScreen from '../screens/Recommendation';
 import { BottomTabParamList, TabOneParamList, TabTwoParamList, TabThreeParamList, AppParamList, ProfileParamList } from '../types';
 
 
 import { Center } from '../src/Center';
 import { withSafeAreaInsets } from 'react-native-safe-area-context';
+import App from '../App';
 
 function HomeScreen() {
   const navigation = useNavigation();
   const [name, setName] = React.useState<any | null>(null);
+  const [password, setPassword] = React.useState<any | null>(null);
   const [error, setError] = React.useState<any | null>("");
 
   const save = async () => {
@@ -32,8 +35,19 @@ function HomeScreen() {
           {entries: [],
            weight: 0,
            height: 0,
-           goal: 'lose weight'}
+           goal: 'lose weight',
+           password: password}
           )
+        );
+    } catch (err) {
+      alert(err);
+    }
+  };
+  const addAccount = async () => {
+    try {
+      await AsyncStorage.setItem(
+        "Account"+name,
+        password
         );
     } catch (err) {
       alert(err);
@@ -58,21 +72,28 @@ function HomeScreen() {
       setName("")
     }
   }
-  const login = async () => {
+  const createAccount = async () => {
     try {
-      let username = await AsyncStorage.getItem(name);
-      if (username !== null){
-        setError("Account already exists");
-      }
-      else if (name == "" || name == null){
+      if (name == "" || name == null) {
         setError("Enter a username");
-      }
-      else{
-        await AsyncStorage.setItem("currentUser",name);
-        await save();
-        navigation.navigate('App');
-        Alert.alert("This account does not already exists", name);
-        setError("");
+      }else {
+        let username = await AsyncStorage.getItem(name);
+        if (username !== null){
+          setError("Account already exists");
+        }
+        else if (name == "" || name == null){
+          setError("Enter a username");
+        }
+        else if (password == "" || password == null) {
+          setError("Enter a password");
+        }
+        else{
+          await AsyncStorage.setItem("currentUser",name);
+          await addAccount();
+          await save();
+          navigation.navigate('App');
+          setError("");
+        }
       }
     } catch (err) {
       alert(err);
@@ -81,9 +102,12 @@ function HomeScreen() {
   
   return (
     <Center>
-          <Text style={styles.name}>Sign up !! </Text>
+          <Text style={styles.name}>Sign up !</Text>
+          <Text style={styles.username}>username: </Text>
           <TextInput style={styles.input} onChangeText = {(text) => setName(text)} />
-          <TouchableOpacity style={styles.button} onPress={() => login()}>
+          <Text style={styles.username}>password: </Text>
+          <TextInput style={styles.input} onChangeText = {(text) => setPassword(text)} />
+          <TouchableOpacity style={styles.button} onPress={() => createAccount()}>
             <Text style={{ color: "white"}}>Create Account</Text>
           </TouchableOpacity>
           <Text>{error}</Text>
@@ -151,6 +175,11 @@ function BottomTabNavigator() {
         name="Profile"
         component={ProfileNavigator}
       />
+      <BottomTab.Screen 
+        name="Recommendation"
+        component={RecommendationScreen}
+      />
+
     </BottomTab.Navigator>
   );
 }
@@ -164,20 +193,32 @@ function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']
 function Login() {
   const navigation = useNavigation();
   const [name, setName] = React.useState<any | null>(null);
+  const [password, setPassword] = React.useState<any | null>(null);
   const [error, setError] = React.useState<any | null>("");
   
   const login = async () => {
     try {
-      let username = await AsyncStorage.getItem(name);
-      if (username == null){
-        setError("Account does not exist");
-      }
-      else if (name == "" || name == null){
+      if (name == "" || name == null){
         setError("Enter a username");
-      }
-      else{
-        await AsyncStorage.setItem("currentUser",name);
-        navigation.navigate('App');
+      }else {
+        let username = await AsyncStorage.getItem(name);
+        let userpassword = await AsyncStorage.getItem("Account"+name);
+        if (username == null){
+          setError("Account does not exist");
+        }
+        else if (name == "" || name == null){
+          setError("Enter a username");
+        }
+        else if (password == "" || password == null) {
+          setError("Enter your password");
+        }
+        else if (password !== userpassword) {
+          setError("Username and Password do not match");
+        }
+        else{
+          await AsyncStorage.setItem("currentUser",name);
+          navigation.navigate('App');
+        }
       }
     } catch (err) {
       alert(err);
@@ -185,8 +226,11 @@ function Login() {
   };
   return (
       <Center>
-          <Text> Log In </Text>
+          <Text style={styles.name}> Log In </Text>
+          <Text style={styles.username}>{"username:"}</Text>
           <TextInput style={styles.input} onChangeText = {(text) => setName(text)} />
+          <Text style={styles.username}>password: </Text>
+          <TextInput style={styles.input} onChangeText = {(text) => setPassword(text)} />
           <Text>{error}</Text>
           <TouchableOpacity style={styles.button} onPress={() => login()}>
             <Text style={{ color: "white"}}>Log in!</Text>
@@ -269,9 +313,13 @@ function ProfileNavigator() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  username: {
+    alignSelf: "stretch",
+    marginLeft: 32,
+    fontSize: 16,
+    textAlign: 'left',
   },
   title: {
     fontSize: 20,
@@ -280,16 +328,18 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 24,
     fontWeight: "300",
-    color: "white",
+    color: "black",
   },
   input: {
     borderWidth: 1,
     borderColor: "#575DD9",
     alignSelf: "stretch",
-    margin: 32,
+    margin: 10,
+    marginLeft: 32,
+    marginRight: 32,
     height: 48,
     borderRadius: 6,
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     fontSize: 25,
   },
   button: {

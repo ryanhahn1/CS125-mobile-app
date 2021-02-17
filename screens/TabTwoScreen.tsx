@@ -19,8 +19,12 @@ export default function TabTwoScreen() {
     ],
   }
   GoogleFit.authorize(options)
-      .then((res) => {
-        console.log('authorized >>>', res)
+      .then((authResult) => {
+        if (authResult.success) {
+          console.log("AUTH_SUCCESS");
+        } else {
+          console.log("AUTH_DENIED", authResult.message);
+        }
       })
       .catch((err) => {
         console.log('err >>> ', err)

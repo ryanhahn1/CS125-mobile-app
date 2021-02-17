@@ -82,8 +82,8 @@ export default function ProfileScreen() {
         <Text>current goal: {goal}</Text>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ProfileEdit")}>
         <Text style={{ color: "white"}}>Edit profile!</Text>
-      </TouchableOpacity>
-    </View>
+        </TouchableOpacity>
+    </View> 
   );
 }
 
