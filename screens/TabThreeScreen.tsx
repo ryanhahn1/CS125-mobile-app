@@ -12,6 +12,7 @@ export default function TabThreeScreen() {
   const [data, setData] = useState([] as any[]);
   const navigation = useNavigation();
   var [input_weight, setWeight] = useState<any | null>(null);
+  var [curr_weight, setCurrWeight] = useState<any | null>(null);
   const [goal, setGoal] = useState<any | null>(null);
   var [input_height, setHeight] = useState<any | null>(null);
   const [retrieve, setRetrieve] = useState(false);
@@ -21,7 +22,7 @@ export default function TabThreeScreen() {
     const updateInfo = async () => {
       get_user_weight()
       .then(d => {
-          setWeight(d);
+          setCurrWeight(d);
       })
       get_user_height()
       .then(d => {
@@ -65,52 +66,32 @@ export default function TabThreeScreen() {
     }
   };
   async function set_user_data() {
-    try {
-      let current_user = await AsyncStorage.getItem("currentUser");
-      if (current_user !== null && current_user !== ""){
-        let userdata = await AsyncStorage.getItem(current_user);
-        if (userdata !== null && userdata !== "") {
-          var parsedList = JSON.parse(userdata).entries;
-          var weight = JSON.parse(userdata).weight;
-          var height = JSON.parse(userdata).height;
-          let day = new Date();
-          parsedList.push({weight: input_weight, date : day.getDate(), month : day.getMonth()})
-          AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, weight: weight, height: height}))
-          Alert.alert("I tried", current_user);
-        }
-        
-      }
-      else if (current_user == null){
-        Alert.alert("Log in first", "current user is null");
-      }
-      else{
-        Alert.alert("Log in first", "current user is empty string");
-      }
-    } catch (err) {
-      alert(err);
+    let current_user = await AsyncStorage.getItem("currentUser");
+    if (current_user !== null && current_user !== ""){
+      let userdata = await AsyncStorage.getItem(current_user);
+      if (userdata !== null && userdata !== "" && input_weight !== null) {
+        setCurrWeight(input_weight);
+        var parsedList = JSON.parse(userdata).entries;
+        var weight = input_weight == null ? JSON.parse(userdata).weight : input_weight;
+        var height = JSON.parse(userdata).height;
+        var goal = JSON.parse(userdata).goal;
+        let day = new Date();
+        parsedList.push({weight: input_weight, date : day.getDate(), month : day.getMonth()})
+        AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, weight: weight, height: height, goal: goal}))
+        Alert.alert("I tried", current_user);
+      } 
     }
   };
   const load_user_data = async () => {
-    try {
-      let current_user = await AsyncStorage.getItem("currentUser");
-      if (current_user !== null && current_user !== ""){
-        let userdata = await AsyncStorage.getItem(current_user);
-        if (userdata !== null) {
-          var parsed = JSON.parse(userdata).entries;
-          setData(parsed);
-        }
-        Alert.alert("I tried", current_user);
+    let current_user = await AsyncStorage.getItem("currentUser");
+    if (current_user !== null && current_user !== ""){
+      let userdata = await AsyncStorage.getItem(current_user);
+      if (userdata !== null) {
+        var parsed = JSON.parse(userdata).entries;
+        setData(parsed);
       }
-      else if (current_user == null){
-        Alert.alert("Log in first", "current user is null");
-      }
-      else{
-        Alert.alert("Log in first", "current user is empty string");
-      }
-      
-    } catch (err) {
-      alert(err);
-    }
+      Alert.alert("I tried", current_user);
+    }    
   };
   return (
     <View style={styles.container}>
@@ -138,7 +119,7 @@ export default function TabThreeScreen() {
           <Text>Key: {idx + 1} Date: {item.date} {item.month} Weight: {item.weight}</Text>
         ))}
       <Text style={styles.name}>My Profile</Text>
-      <Text>current weight: {input_weight}</Text>
+      <Text>current weight: {curr_weight}</Text>
       <Text>current height: {input_height}</Text>
       <Text>current goal: {goal}</Text>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ProfileEdit")}>

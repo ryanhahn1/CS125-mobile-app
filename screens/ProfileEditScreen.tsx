@@ -15,7 +15,7 @@ export default function ProfileEditScreen() {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
       let userdata = await AsyncStorage.getItem(current_user);
-      if (userdata !== null && userdata !== "") {
+      if (userdata !== null && userdata !== "" && Goal) {
         setGoal(Goal);
         var parsedList = JSON.parse(userdata).entries;
         var weight = JSON.parse(userdata).weight;
