@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="6ccfa08c-5daf-4a2e-bcda-00fab9614e86" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/TabOneScreen.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/screens/TabOneScreen.tsx" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1nMha5YS03QczTI1rXFenCDafM8" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="AndroidSdkUpdater" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6ccfa08c-5daf-4a2e-bcda-00fab9614e86" name="Default Changelist" comment="" />
+      <created>1611205930061</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1611205930061</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="474" y="161" width="920" height="604" key="AVDManager" timestamp="1611642004416">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="474" y="161" width="920" height="604" key="AVDManager/0.0.1536.824@0.0.1536.824" timestamp="1611642004416" />
+    <state x="647" y="314" key="FileChooserDialogImpl" timestamp="1611642047918">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="647" y="314" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1611642047918" />
+    <state x="555" y="96" key="SettingsEditor" timestamp="1611639693116">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="555" y="96" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1611639693116" />
+    <state x="842" y="146" width="672" height="678" key="search.everywhere.popup" timestamp="1611639594875">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="842" y="146" width="672" height="678" key="search.everywhere.popup/0.0.1536.824@0.0.1536.824" timestamp="1611639594875" />
+  </component>
+</project>

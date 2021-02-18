@@ -1,15 +1,38 @@
-import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, FlatList, Alert} from 'react-native';
 
 import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
+//import { Text, View } from '../components/Themed';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import GoogleFit, { Scopes } from 'react-native-google-fit'
+
+
 
 export default function TabTwoScreen() {
+  //const [name, setName] = useState<any | null>(null);
+  const [data, setData] = useState([] as any[]);
+  const options = {
+    scopes: [
+      Scopes.FITNESS_ACTIVITY_READ,
+      Scopes.FITNESS_BODY_READ,
+    ],
+  }
+  GoogleFit.authorize(options)
+      .then((authResult) => {
+        if (authResult.success) {
+          console.log("AUTH_SUCCESS");
+        } else {
+          console.log("AUTH_DENIED", authResult.message);
+        }
+      })
+      .catch((err) => {
+        console.log('err >>> ', err)
+      })
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/TabTwoScreen.tsx" />
+      <Text style={styles.name}>Google Fit Tab!</Text>
     </View>
   );
 }
@@ -17,16 +40,36 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#fff",
     alignItems: 'center',
-    justifyContent: 'center',
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  name: {
+    fontSize: 24,
+    fontWeight: "300",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#575DD9",
+    alignSelf: "stretch",
+    margin: 32,
+    height: 48,
+    borderRadius: 6,
+    paddingHorizontal: 16,
+    fontSize: 25,
+  },
+  button: {
+    backgroundColor: "#575DD9",
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "stretch",
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    marginTop: 16,
+    marginHorizontal: 32,
+    borderRadius: 6,
   },
 });

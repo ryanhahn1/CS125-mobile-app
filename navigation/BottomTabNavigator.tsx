@@ -1,37 +1,180 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer, useNavigation } from "@react-navigation/native"
 import * as React from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Button, Alert} from 'react-native';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import TabOneScreen from '../screens/TabOneScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
-import { BottomTabParamList, TabOneParamList, TabTwoParamList } from '../types';
+import TabThreeScreen from '../screens/TabThreeScreen';
+import ProfileEditScreen from '../screens/ProfileEditScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import RecommendationScreen from '../screens/Recommendation';
+import { BottomTabParamList, TabOneParamList, TabTwoParamList, TabThreeParamList, AppParamList, ProfileParamList } from '../types';
+
+
+import { Center } from '../src/Center';
+import { withSafeAreaInsets } from 'react-native-safe-area-context';
+import App from '../App';
+
+function HomeScreen() {
+  const navigation = useNavigation();
+  const [name, setName] = React.useState<any | null>(null);
+  const [password, setPassword] = React.useState<any | null>(null);
+  const [error, setError] = React.useState<any | null>("");
+
+  const save = async () => {
+    try {
+      await AsyncStorage.setItem(
+        name,
+        JSON.stringify(
+          {entries: [],
+           weight: 0,
+           height: 0,
+           goal: 'lose weight',
+           password: password}
+          )
+        );
+    } catch (err) {
+      alert(err);
+    }
+  };
+  const addAccount = async () => {
+    try {
+      await AsyncStorage.setItem(
+        "Account"+name,
+        password
+        );
+    } catch (err) {
+      alert(err);
+    }
+  };
+  const load = async () => {
+    try {
+      let userdata = await AsyncStorage.getItem(name);
+      if (userdata !== null) {
+        
+      }
+    } catch (err) {
+      alert(err);
+    }
+  };
+  const remove = async () => {
+    try {
+      await AsyncStorage.removeItem(name)
+    } catch (err) {
+      alert(err)
+    } finally {
+      setName("")
+    }
+  }
+  const createAccount = async () => {
+    try {
+      if (name == "" || name == null) {
+        setError("Enter a username");
+      }else {
+        let username = await AsyncStorage.getItem(name);
+        if (username !== null){
+          setError("Account already exists");
+        }
+        else if (name == "" || name == null){
+          setError("Enter a username");
+        }
+        else if (password == "" || password == null) {
+          setError("Enter a password");
+        }
+        else{
+          await AsyncStorage.setItem("currentUser",name);
+          await addAccount();
+          await save();
+          navigation.navigate('App');
+          setError("");
+        }
+      }
+    } catch (err) {
+      alert(err);
+    }
+  };
+  
+  return (
+    <Center>
+          <Text style={styles.name}>Sign up !</Text>
+          <Text style={styles.username}>username: </Text>
+          <TextInput style={styles.input} onChangeText = {(text) => setName(text)} />
+          <Text style={styles.username}>password: </Text>
+          <TextInput style={styles.input} onChangeText = {(text) => setPassword(text)} />
+          <TouchableOpacity style={styles.button} onPress={() => createAccount()}>
+            <Text style={{ color: "white"}}>Create Account</Text>
+          </TouchableOpacity>
+          <Text>{error}</Text>
+          <TouchableOpacity style={styles.button} onPress={() => remove()}>
+            <Text style={{ color: "white"}}>Remove Account</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
+            <Text style={{ color: "white"}}>Already have an account? Log in</Text>
+          </TouchableOpacity>
+    </Center>
+      
+  );
+}
+
+const EntireApp = createStackNavigator<AppParamList>();
+
+export default function AppNavigator() {
+  return (
+    <EntireApp.Navigator
+      initialRouteName="Login">
+        <EntireApp.Screen 
+          name= "Home"
+          component={HomeScreen}/>
+        <EntireApp.Screen 
+          name= "Login"
+          component={Login}/>
+        <EntireApp.Screen 
+          name= "App"
+          component={BottomTabNavigator}/>
+    </EntireApp.Navigator>
+  );
+}
+
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
-export default function BottomTabNavigator() {
+function BottomTabNavigator() {
   const colorScheme = useColorScheme();
-
   return (
     <BottomTab.Navigator
-      initialRouteName="TabOne"
+      initialRouteName="Diet"
       tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}>
       <BottomTab.Screen
-        name="TabOne"
+        name="Diet"
         component={TabOneNavigator}
-        options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
-        }}
+        // options={{
+        //   tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+        // }}
       />
       <BottomTab.Screen
-        name="TabTwo"
+        name="Exercise"
         component={TabTwoNavigator}
-        options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
-        }}
+        // options={{
+        //   // tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+        // }}
       />
+      <BottomTab.Screen
+        name="Progress"
+        component={TabThreeNavigator}
+        // options={{
+        //   tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+        // }}
+      />
+      {/* <BottomTab.Screen 
+        name="Recommendation"
+        component={RecommendationScreen}
+      /> */}
     </BottomTab.Navigator>
   );
 }
@@ -41,6 +184,59 @@ export default function BottomTabNavigator() {
 function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']; color: string }) {
   return <Ionicons size={30} style={{ marginBottom: -3 }} {...props} />;
 }
+
+function Login() {
+  const navigation = useNavigation();
+  const [name, setName] = React.useState<any | null>(null);
+  const [password, setPassword] = React.useState<any | null>(null);
+  const [error, setError] = React.useState<any | null>("");
+  
+  const login = async () => {
+    try {
+      if (name == "" || name == null){
+        setError("Enter a username");
+      }else {
+        let username = await AsyncStorage.getItem(name);
+        let userpassword = await AsyncStorage.getItem("Account"+name);
+        if (username == null){
+          setError("Account does not exist");
+        }
+        else if (name == "" || name == null){
+          setError("Enter a username");
+        }
+        else if (password == "" || password == null) {
+          setError("Enter your password");
+        }
+        else if (password !== userpassword) {
+          setError("Username and Password do not match");
+        }
+        else{
+          await AsyncStorage.setItem("currentUser",name);
+          navigation.navigate('App');
+        }
+      }
+    } catch (err) {
+      alert(err);
+    }
+  };
+  return (
+      <Center>
+          <Text style={styles.name}> Log In </Text>
+          <Text style={styles.username}>{"username:"}</Text>
+          <TextInput style={styles.input} onChangeText = {(text) => setName(text)} />
+          <Text style={styles.username}>password: </Text>
+          <TextInput style={styles.input} onChangeText = {(text) => setPassword(text)} />
+          <Text>{error}</Text>
+          <TouchableOpacity style={styles.button} onPress={() => login()}>
+            <Text style={{ color: "white"}}>Log in!</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
+            <Text style={{ color: "white"}}>Don't have an account? Sign up</Text>
+          </TouchableOpacity>
+      </Center>
+  );
+}
+
 
 // Each tab has its own navigation stack, you can read more about this pattern here:
 // https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
@@ -52,7 +248,12 @@ function TabOneNavigator() {
       <TabOneStack.Screen
         name="TabOneScreen"
         component={TabOneScreen}
-        options={{ headerTitle: 'Tab One Title' }}
+        options={{ header: () => null }}
+      />
+      <TabOneStack.Screen 
+        name="Login" 
+        component={Login} 
+        options={{ header: () => null }}
       />
     </TabOneStack.Navigator>
   );
@@ -66,8 +267,85 @@ function TabTwoNavigator() {
       <TabTwoStack.Screen
         name="TabTwoScreen"
         component={TabTwoScreen}
-        options={{ headerTitle: 'Tab Two Title' }}
+        options={{ header: () => null }}
       />
     </TabTwoStack.Navigator>
   );
 }
+
+const TabThreeStack = createStackNavigator<TabThreeParamList>();
+
+function TabThreeNavigator() {
+  return (
+    <TabThreeStack.Navigator>
+      <TabThreeStack.Screen
+        name="TabThreeScreen"
+        component={TabThreeScreen}
+        options={{ header: () => null }}
+      />
+    </TabThreeStack.Navigator>
+  );
+}
+
+const ProfileStack = createStackNavigator<ProfileParamList>();
+
+function ProfileNavigator() {
+  return (
+    <ProfileStack.Navigator>
+      <ProfileStack.Screen 
+        name="Profile"
+        component={ProfileScreen}
+        options={{ header: () => null }}
+      />
+      <ProfileStack.Screen 
+        name="ProfileEdit"
+        component={ProfileEditScreen}
+        options={{ header: () => null }}
+      />
+    </ProfileStack.Navigator>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'column',
+  },
+  username: {
+    alignSelf: "stretch",
+    marginLeft: 32,
+    fontSize: 16,
+    textAlign: 'left',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  name: {
+    fontSize: 24,
+    fontWeight: "300",
+    color: "black",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#575DD9",
+    alignSelf: "stretch",
+    margin: 10,
+    marginLeft: 32,
+    marginRight: 32,
+    height: 48,
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    fontSize: 25,
+  },
+  button: {
+    backgroundColor: "#575DD9",
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "stretch",
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    marginTop: 16,
+    marginHorizontal: 32,
+    borderRadius: 6,
+  },
+});
