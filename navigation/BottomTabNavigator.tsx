@@ -246,7 +246,7 @@ function TabOneNavigator() {
   return (
     <TabOneStack.Navigator>
       <TabOneStack.Screen
-        name="TabOneScreen"
+        name="Diet"
         component={TabOneScreen}
         options={{ header: () => null }}
       />
@@ -265,7 +265,7 @@ function TabTwoNavigator() {
   return (
     <TabTwoStack.Navigator>
       <TabTwoStack.Screen
-        name="TabTwoScreen"
+        name="Exercise"
         component={TabTwoScreen}
         options={{ header: () => null }}
       />
@@ -279,32 +279,37 @@ function TabThreeNavigator() {
   return (
     <TabThreeStack.Navigator>
       <TabThreeStack.Screen
-        name="TabThreeScreen"
+        name="Progress"
         component={TabThreeScreen}
+        options={{ header: () => null }}
+      />
+      <TabThreeStack.Screen
+        name="ProfileEdit"
+        component={ProfileEditScreen}
         options={{ header: () => null }}
       />
     </TabThreeStack.Navigator>
   );
 }
 
-const ProfileStack = createStackNavigator<ProfileParamList>();
+// const ProfileStack = createStackNavigator<ProfileParamList>();
 
-function ProfileNavigator() {
-  return (
-    <ProfileStack.Navigator>
-      <ProfileStack.Screen 
-        name="Profile"
-        component={ProfileScreen}
-        options={{ header: () => null }}
-      />
-      <ProfileStack.Screen 
-        name="ProfileEdit"
-        component={ProfileEditScreen}
-        options={{ header: () => null }}
-      />
-    </ProfileStack.Navigator>
-  );
-}
+// function ProfileNavigator() {
+//   return (
+//     <ProfileStack.Navigator>
+//       <ProfileStack.Screen 
+//         name="Profile"
+//         component={ProfileScreen}
+//         options={{ header: () => null }}
+//       />
+//       <ProfileStack.Screen 
+//         name="ProfileEdit"
+//         component={ProfileEditScreen}
+//         options={{ header: () => null }}
+//       />
+//     </ProfileStack.Navigator>
+//   );
+// }
 
 const styles = StyleSheet.create({
   container: {
