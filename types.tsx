@@ -10,11 +10,9 @@ export type AppParamList = {
 }
 
 export type BottomTabParamList = {
-  TabOne: undefined;
-  TabTwo: undefined;
-  TabThree: undefined;
-  Profile: undefined;
-  Recommendation: undefined;
+  Diet: undefined;
+  Exercise: undefined;
+  Progress: undefined;
 };
 
 export type TabOneParamList = {

@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
   var [input_weight, setWeight] = useState<any | null>(null);
   const [goal, setGoal] = useState<any | null>(null);
   var [input_height, setHeight] = useState<any | null>(null);
-  const [retrieve, setRetrieve] = useState(false); 
+  const [retrieve, setRetrieve] = useState(false);
+  const isFocused = useIsFocused(); 
 
   useEffect(() => {
     const updateInfo = async () => {
@@ -25,11 +26,8 @@ export default function ProfileScreen() {
           setGoal(d);
       })
     }
-    if (retrieve) {
-      updateInfo();
-      setRetrieve(false);
-    }
-  }, [retrieve]);
+    updateInfo();
+  }, [isFocused]);
   async function get_user_height() {
       let current_user = await AsyncStorage.getItem("currentUser");
       if (current_user !== null && current_user !== ""){

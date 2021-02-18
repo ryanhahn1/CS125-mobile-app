@@ -148,38 +148,33 @@ function BottomTabNavigator() {
   const colorScheme = useColorScheme();
   return (
     <BottomTab.Navigator
-      initialRouteName="TabOne"
+      initialRouteName="Diet"
       tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}>
       <BottomTab.Screen
-        name="TabOne"
+        name="Diet"
         component={TabOneNavigator}
         // options={{
         //   tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
         // }}
       />
       <BottomTab.Screen
-        name="TabTwo"
+        name="Exercise"
         component={TabTwoNavigator}
         // options={{
         //   // tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
         // }}
       />
       <BottomTab.Screen
-        name="TabThree"
+        name="Progress"
         component={TabThreeNavigator}
         // options={{
         //   tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
         // }}
       />
-      <BottomTab.Screen
-        name="Profile"
-        component={ProfileNavigator}
-      />
-      <BottomTab.Screen 
+      {/* <BottomTab.Screen 
         name="Recommendation"
         component={RecommendationScreen}
-      />
-
+      /> */}
     </BottomTab.Navigator>
   );
 }
