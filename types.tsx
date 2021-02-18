@@ -16,19 +16,15 @@ export type BottomTabParamList = {
 };
 
 export type TabOneParamList = {
-  TabOneScreen: undefined;
+  Diet: undefined;
   Login: undefined;
 };
 
 export type TabTwoParamList = {
-  TabTwoScreen: undefined;
+  Exercise: undefined;
 };
 
 export type TabThreeParamList = {
-  TabThreeScreen: undefined;
-};
-
-export type ProfileParamList = {
-  Profile: undefined;
+  Progress: undefined;
   ProfileEdit: undefined;
 };

@@ -8,8 +8,6 @@ import DropDownPicker from 'react-native-dropdown-picker';
 
 export default function ProfileEditScreen() {
   const navigation = useNavigation();
-
-  var [input_weight, setWeight] = useState<any | null>(null);
   const [goal, setGoal] = useState<any | null>(null);
   var [input_height, setHeight] = useState<any | null>(null);
   
@@ -33,18 +31,19 @@ export default function ProfileEditScreen() {
       let userdata = await AsyncStorage.getItem(current_user);
       if (userdata !== null && userdata !== "") {
         var parsedList = JSON.parse(userdata).entries;
-        var weight = input_weight == null ? JSON.parse(userdata).weight : input_weight;
+        var weight = JSON.parse(userdata).weight;
         var height = input_height == null ? JSON.parse(userdata).height : input_height;
         var goal = JSON.parse(userdata).goal;
         AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, weight: weight, height: height, goal: goal}))
       }
     }
-    navigation.navigate("Profile")
+    navigation.navigate("Progress")
   }; 
 
   return (
     <View style={styles.container}>
       <Text style={styles.name}>My Profile</Text>
+      <Text>Goal:</Text>
       <DropDownPicker 
           items={[
               {label: 'Lose Weight', value: 'lose weight'},
@@ -60,8 +59,6 @@ export default function ProfileEditScreen() {
           dropDownStyle={{backgroundColor: '#fafafa'}}
           onChangeItem={item => set_user_goal(item.value)}
       />
-      <Text style={styles.name}>Input Your Current Weight in lbs!</Text>
-      <TextInput style={styles.input} onChangeText = {(text) => setWeight(text)} />
       <Text style={styles.name}>Input Your Current Height in cm!</Text>
       <TextInput style={styles.input} onChangeText = {(text) => setHeight(text)} />
       <TouchableOpacity style={styles.button} onPress={() => save_user_info()}>
