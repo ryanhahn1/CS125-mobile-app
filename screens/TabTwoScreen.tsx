@@ -25,7 +25,7 @@ export default function TabTwoScreen (){
   const [pastStep, setPastStep] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
 
-  const [seconds, setSeconds] = useState(0);
+  // const [seconds, setSeconds] = useState(0);
   /*
   state = {
     isPedometerAvailable: 'checking',
@@ -40,6 +40,7 @@ export default function TabTwoScreen (){
 
   */
 
+  /*
   useEffect(() => {
     const interverl = setInterval(() => {
       setSeconds(seconds => seconds + 1);
@@ -47,14 +48,17 @@ export default function TabTwoScreen (){
     return () => clearInterval(interverl);
   }, []
   );
+  */
 
   useEffect(() => {
     _subscribe();
 
    return() => {
+    // const _subscription = null;
+    // removeEventListener(_unsubscribe);
     console.log("unsubscribe");
     };
-  },[seconds]
+  },[]
   );
 
   /*
@@ -99,15 +103,16 @@ export default function TabTwoScreen (){
     );
   };
 
+  
+  
   /*
-  const unsubscribe = () => {
-    this._subscription && this._subscription.remove();
-    this._subscription = null;
+  const _unsubscribe = () => {
+    _subscription && _subscription.remove();
+    _subscription = null;
   };
   */
-
   
-
+  
 
 
 
@@ -184,82 +189,13 @@ export default function TabTwoScreen (){
   return (
     <View style={styles.container}>
 
-      <Text style={styles.name}>Google Fit Tab!</Text>
+      <Text style={styles.name}>Google Fit Tab！</Text>
       <Text>Pedometer.isAvailableAsync(): {isPedometer}</Text>
       <Text>Steps taken in the last 24 hours: {pastStep}</Text>
-      <Text>Walk! And watch this go up: {currentStep}</Text>
-    
-      <View
-      style={{
-        flex: 1,
-        backgroundColor: "#1f2026",
-        paddingTop: 5,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      
-      <View
-        style={{
-          flex: 1,
-          flexDirection: "row",
-          marginLeft: width * 0.15,
-          marginRight: width * 0.15,
-          marginBottom: width * 0.05,
-        }}
-      > 
+      <Text>Walk! And watch this go up: {currentStep}</Text> 
 
-        <FitHealthStat
-          iconBackgroundColor="#183b57"
-          iconColor="#0e8df2"
-          actual="75"
-          over=" / 100"
-          type="Move Min"
-        />
-        <FitHealthStat
-          iconBackgroundColor="#124b41"
-          iconColor="#03ddb3"
-          actual="30"
-          over=" / 20"
-          type="Heart Pts"
-          doubleIcon
-        />
-      </View>
-      <View
-        style={{
-          flex: 1,
-          flexDirection: "row",
-          justifyContent: "space-evenly",
-          marginLeft: width * 0.1,
-          marginRight: width * 0.1,
-          marginBottom: width * 0.05,
-        }}
-      >
-        <View>
-          <FitExerciseStat quantity = "123 " type="steps " />
-        </View>
-        <View>
-          <Text style={{ color: "#9a9ba1", fontSize: 40, fontWeight: "100" }}>
-            |
-          </Text>
-        </View>
-        <View>
-          <FitExerciseStat quantity="6432 " type="cal " />
-        </View>
-        <View>
-          <Text style={{ color: "#9a9ba1", fontSize: 40, fontWeight: "100" }}>
-            |
-          </Text>
-        </View>
-        <View>
-          <FitExerciseStat quantity="5.2 " type="miles " />
-        </View>
-      </View>
-    </View>
-
-
-    
-    
+      <Text>Total cal: </Text>
+      <Text>Total miles: </Text> 
     
     </View>
 
@@ -343,3 +279,82 @@ const styles = StyleSheet.create({
   },
 });
 */
+
+
+
+/*
+
+
+
+<View
+      style={{
+        flex: 1,
+        backgroundColor: "#1f2026",
+        paddingTop: 5,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          marginLeft: width * 0.15,
+          marginRight: width * 0.15,
+          marginBottom: width * 0.05,
+        }}
+      > 
+
+        <FitHealthStat
+          iconBackgroundColor="#183b57"
+          iconColor="#0e8df2"
+          actual="75"
+          over=" / 100"
+          type="Move Min"
+        />
+        <FitHealthStat
+          iconBackgroundColor="#124b41"
+          iconColor="#03ddb3"
+          actual="30"
+          over=" / 20"
+          type="Heart Pts"
+          doubleIcon
+        />
+      </View>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          justifyContent: "space-evenly",
+          marginLeft: width * 0.1,
+          marginRight: width * 0.1,
+          marginBottom: width * 0.05,
+        }}
+      >
+        <View>
+          <FitExerciseStat quantity = "123 " type="steps " />
+        </View>
+        <View>
+          <Text style={{ color: "#9a9ba1", fontSize: 40, fontWeight: "100" }}>
+            |
+          </Text>
+        </View>
+        <View>
+          <FitExerciseStat quantity="6432 " type="cal " />
+        </View>
+        <View>
+          <Text style={{ color: "#9a9ba1", fontSize: 40, fontWeight: "100" }}>
+            |
+          </Text>
+        </View>
+        <View>
+          <FitExerciseStat quantity="5.2 " type="miles " />
+        </View>
+      </View>
+    </View>
+
+
+
+
+    */
