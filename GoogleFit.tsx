@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, View, Dimensions, ScrollView } from "react-native";
 import FitImage from "./components/FitImage";
-import HealthStatus from "./components/HealthStatus";
+import FitHealthStat from "./components/HealthStatus";
 import ExerciseStatus from "./components/ExerciseStatus";
 import FitChart from "./components/FitChart";
 import AdditionalStats from "./components/AdditionalStats";
@@ -42,14 +42,14 @@ const GoogleFit = () => {
           marginBottom: width * 0.05,
         }}
       >
-        <HealthStatus
+        <FitHealthStat
           iconBackgroundColor="#183b57"
           iconColor="#0e8df2"
           actual="75"
           over="/100"
           type="Move Min"
         />
-        <HealthStatus
+        <FitHealthStat
           iconBackgroundColor="#124b41"
           iconColor="#03ddb3"
           actual="30"

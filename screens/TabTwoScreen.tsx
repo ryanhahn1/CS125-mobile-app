@@ -13,17 +13,123 @@ import FitExerciseStat from "../components/ExerciseStatus";
 import FitChart from "../components/FitChart";
 
 
+import { Pedometer } from 'expo-sensors';
+
 const { width } = Dimensions.get("screen");
 
-export default function TabTwoScreen(){
+export default function TabTwoScreen (){
+
   //const [name, setName] = useState<any | null>(null);
-  const [data, setData] = useState([] as any[]);
+  //const [data, setData] = useState([] as any[]);
+  const [isPedometer, setIsPedometer] = useState('checking');
+  const [pastStep, setPastStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
+
+  const [seconds, setSeconds] = useState(0);
+  /*
+  state = {
+    isPedometerAvailable: 'checking',
+    pastStepCount: 0,
+    currentStepCount: 0,
+  };
+
+  componentWillUnmount() {
+    this._unsubscribe();
+  }
+
+
+  */
+
+  useEffect(() => {
+    const interverl = setInterval(() => {
+      setSeconds(seconds => seconds + 1);
+    }, 1000);
+    return () => clearInterval(interverl);
+  }, []
+  );
+
+  useEffect(() => {
+    _subscribe();
+
+   return() => {
+    console.log("unsubscribe");
+    };
+  },[seconds]
+  );
+
+  /*
+  useEffect(() => {
+    return() => {
+      console.log("unsubscribe");
+    };
+  },[seconds]
+  );
+  */
+
+  const _subscribe = () => {
+    const _subscription = Pedometer.watchStepCount(result => {
+      setCurrentStep(result.steps);
+    });
+
+    Pedometer.isAvailableAsync().then(
+      result => {
+        setIsPedometer(String(result));
+      },
+      error => {
+        setIsPedometer(
+          'Could not get isPedometerAvailable: ' + error,
+        );
+      }
+    );
+
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - 1);
+    Pedometer.getStepCountAsync(start, end).then(
+      result => {
+        setPastStep( result.steps );
+      }
+      /*,
+      error => {
+        setPastStep(
+           error
+        );
+      }
+      */
+    );
+  };
+
+  /*
+  const unsubscribe = () => {
+    this._subscription && this._subscription.remove();
+    this._subscription = null;
+  };
+  */
+
+  
+
+
+
+
+/*
+  
   const options = {
     scopes: [
       Scopes.FITNESS_ACTIVITY_READ,
+      Scopes.FITNESS_ACTIVITY_WRITE,
       Scopes.FITNESS_BODY_READ,
+      Scopes.FITNESS_BODY_WRITE,
     ],
   }
+
+  const opt = {
+    startDate: "2017-01-01T00:00:17.971Z", // required ISO8601Timestamp
+    endDate: new Date().toISOString(), // required ISO8601Timestamp
+    BucketOptions : {
+    bucketUnit: "DAY", // optional - default "DAY". Valid values: "NANOSECOND" | "MICROSECOND" | "MILLISECOND" | "SECOND" | "MINUTE" | "HOUR" | "DAY"
+    bucketInterval: 1} // optional - default 1. 
+  };
+  
 
 
   GoogleFit.authorize(options)
@@ -36,13 +142,35 @@ export default function TabTwoScreen(){
 
 
     /// --- 
-
+    
+    
+  
   GoogleFit.getDailyStepCountSamples(opt)
       .then((res) => {
+        // personInfo = res; //
+        //steps = res.values;
+        //var data = JSON.parse(res);
+        //var x = data[0].steps;
         console.log('Daily steps >>> ', res)
       })
       .catch((err) => {console.warn(err)
       });
+
+
+  // blood pressure
+  async function fetchData() {
+    const heartrate = await GoogleFit.getHeartRateSamples(opt);
+    console.log(heartrate);
+  
+    const bloodpressure = await GoogleFit.getBloodPressureSamples(opt);
+    console.log(bloodpressure);
+  }
+
+  // cal and distance
+  GoogleFit.getActivitySamples(opt).then((res)=> {
+    console.log(res)
+  });
+
 
 
     // GoogleFit.getDailySteps(opt).then().catch()
@@ -51,12 +179,15 @@ export default function TabTwoScreen(){
 
     // <Text style={styles.name}>Data: {opt.startDate} </Text>
     // <Text style={styles.name}>Steps: {opt.endDate} </Text>
-    
+    */
 
   return (
     <View style={styles.container}>
 
       <Text style={styles.name}>Google Fit Tab!</Text>
+      <Text>Pedometer.isAvailableAsync(): {isPedometer}</Text>
+      <Text>Steps taken in the last 24 hours: {pastStep}</Text>
+      <Text>Walk! And watch this go up: {currentStep}</Text>
     
       <View
       style={{
@@ -105,7 +236,7 @@ export default function TabTwoScreen(){
         }}
       >
         <View>
-          <FitExerciseStat quantity="8225 " type="steps " />
+          <FitExerciseStat quantity = "123 " type="steps " />
         </View>
         <View>
           <Text style={{ color: "#9a9ba1", fontSize: 40, fontWeight: "100" }}>
@@ -137,12 +268,6 @@ export default function TabTwoScreen(){
   );
 }
 
-const opt = {
-  startDate: "2017-01-01T00:00:17.971Z", // required ISO8601Timestamp
-  endDate: new Date().toISOString(), // required ISO8601Timestamp
-  // bucketUnit: "DAY", // optional - default "DAY". Valid values: "NANOSECOND" | "MICROSECOND" | "MILLISECOND" | "SECOND" | "MINUTE" | "HOUR" | "DAY"
-  // bucketInterval: 1, // optional - default 1. 
-};
 
 
 
@@ -208,3 +333,13 @@ const stepsData = {
 };
 
 
+/*
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+*/
