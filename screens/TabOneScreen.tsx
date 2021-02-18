@@ -139,7 +139,7 @@ export default function TabOneScreen() {
       </TouchableOpacity>
       <Text>Reset Food Account</Text>
       <TouchableOpacity style={styles.button} onPress={() => resetFood()}>
-        <Text style={{ color: "white"}}>Log out!</Text>
+        <Text style={{ color: "white"}}>Reset History!</Text>
       </TouchableOpacity>
       <TextInput style={styles.input} onChangeText = {(text) => setInputFood(text)} />
       <TouchableOpacity style={styles.button} onPress={() => {console.log("outside api call function"); searchFood()}}>
