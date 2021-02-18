@@ -11,12 +11,27 @@ export default function TabOneScreen() {
   const navigation = useNavigation();
   const [inputFood, setInputFood] = useState("");
   const [data, setData] = useState([] as any[]);
+  const [foodSelect, setFoodSelect] = useState<any | null>(null);
   const [error, setError] = React.useState<any | null>("");
   //const [current_user, setCurrent_user] = React.useState(await AsyncStorage.getItem("currentUser"));
   const logout = async () => {
     try {
       await AsyncStorage.removeItem("currentUser");
       navigation.goBack();
+    } catch (err) {
+      alert(err);
+    }
+  };
+
+  const resetFood = async () => {
+    var user = null;
+      try {
+        user = await AsyncStorage.getItem("currentUser");
+      } catch (err) {
+        alert(err);
+      }
+    try {
+      await AsyncStorage.removeItem("Food" + user);
     } catch (err) {
       alert(err);
     }
@@ -35,7 +50,19 @@ export default function TabOneScreen() {
           }
           console.log("api call success");
           //console.log(JSON.stringify(response.data.hints));
-          setData(response.data.hints);
+          var foods = response.data.hints;
+          var displayFoods = [] as any[];
+          var seenIds = new Set;
+          var i = 0;
+          // filter out duplicate foodId results
+          while (i < foods.length){
+            if (!seenIds.has(foods[i].food.foodId)){
+              displayFoods.push(foods[i])
+              seenIds.add(foods[i].food.foodId);
+            }
+            i++;
+          }
+          setData(displayFoods);
           setError("");
         })
         .catch(error => setError(error.response.status))
@@ -49,7 +76,57 @@ export default function TabOneScreen() {
 
   const addFood = async() => {
       setError("yep onpress works");
-
+      //console.log(foodSelect);
+      var user = null;
+      try {
+        user = await AsyncStorage.getItem("currentUser");
+      } catch (err) {
+        alert(err);
+      }
+      if (user !== null){
+        try {
+          let userdata = await AsyncStorage.getItem("Food" + user);
+          // pull and add to food info
+          if (userdata !== null){
+            var parsedList = JSON.parse(userdata).entries;
+            var i = 0;
+            var found = 0;
+            let day = new Date();
+            for (i = 0; i < parsedList.length; i++){
+              // food already exists in storage
+              //console.log(parsedList[i]);
+              if (parsedList[i].food.foodId == foodSelect.foodId){
+                parsedList[i].dates.push(Date.now())
+                found = 1;
+                setError("already added, you've eaten this " + parsedList[i].dates.length + " times!");
+              }
+            }
+            // first time eating
+            if (!found){
+              parsedList.push({food: foodSelect, dates: [Date.now()]})
+              setError("first time eating");
+            }
+            AsyncStorage.setItem("Food" + user, JSON.stringify({entries: parsedList}))
+          }
+          // initialize food info storage
+          else{
+            await AsyncStorage.setItem(
+              "Food" + user,
+              JSON.stringify(
+                {entries: [{food: foodSelect, dates: [Date.now()]}]}
+              )
+              
+            );
+            setError("first time eating anything");
+          }
+          
+        } catch (err) {
+          alert(err);
+        }
+      }
+      else{
+        setError("user not logged in");
+      }
   }
 
 
@@ -58,6 +135,10 @@ export default function TabOneScreen() {
       <Text style={styles.name}>Food Tab!</Text>
       <Text>I added a log out button here for convenience. I'll move it to a proper place later.</Text>
       <TouchableOpacity style={styles.button} onPress={() => logout()}>
+        <Text style={{ color: "white"}}>Log out!</Text>
+      </TouchableOpacity>
+      <Text>Reset Food Account</Text>
+      <TouchableOpacity style={styles.button} onPress={() => resetFood()}>
         <Text style={{ color: "white"}}>Log out!</Text>
       </TouchableOpacity>
       <TextInput style={styles.input} onChangeText = {(text) => setInputFood(text)} />
@@ -76,7 +157,8 @@ export default function TabOneScreen() {
         data={data}
         renderItem={
           ( { item } ) => (
-          <TouchableOpacity style={styles.foodEntry} onPress={addFood}>
+          <TouchableOpacity style={styles.foodEntry} onPress={() => {setFoodSelect(item.food); addFood()}}>
+            <Text style={{ color: "black"}}>{item.food.foodId}</Text>
             <Text style={{ color: "black"}}>{item.food.label}</Text>
             <Text style={{ color: "black"}}>{Math.round(item.food.nutrients.ENERC_KCAL)} Calories</Text>
             <Image style={styles.foodImage} source={{uri : item.food.image}}/>
