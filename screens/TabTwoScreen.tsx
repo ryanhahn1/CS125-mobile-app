@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, FlatList, Alert, Dimensions} from 'react-native';
+import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, FlatList, Alert, Dimensions, ScrollView} from 'react-native';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 //import { Text, View } from '../components/Themed';
@@ -11,6 +11,7 @@ import GoogleFit, { Scopes } from 'react-native-google-fit'
 import FitHealthStat from "../components/HealthStatus";
 import FitExerciseStat from "../components/ExerciseStatus";
 import FitChart from "../components/FitChart";
+import FitImage from "../components/FitImage";
 
 
 import { Pedometer } from 'expo-sensors';
@@ -24,31 +25,6 @@ export default function TabTwoScreen (){
   const [isPedometer, setIsPedometer] = useState('checking');
   const [pastStep, setPastStep] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
-
-  // const [seconds, setSeconds] = useState(0);
-  /*
-  state = {
-    isPedometerAvailable: 'checking',
-    pastStepCount: 0,
-    currentStepCount: 0,
-  };
-
-  componentWillUnmount() {
-    this._unsubscribe();
-  }
-
-
-  */
-
-  /*
-  useEffect(() => {
-    const interverl = setInterval(() => {
-      setSeconds(seconds => seconds + 1);
-    }, 1000);
-    return () => clearInterval(interverl);
-  }, []
-  );
-  */
 
   useEffect(() => {
     _subscribe();
@@ -83,7 +59,7 @@ export default function TabTwoScreen (){
         setIsPedometer(
           'Could not get isPedometerAvailable: ' + error,
         );
-      }
+      } 
     );
 
     const end = new Date();
@@ -186,29 +162,47 @@ export default function TabTwoScreen (){
     // <Text style={styles.name}>Steps: {opt.endDate} </Text>
     */
 
+  
+  
   return (
     <View style={styles.container}>
 
-      <Text style={styles.name}>Google Fit Tab！</Text>
-      <Text>Pedometer.isAvailableAsync(): {isPedometer}</Text>
+      <Text style={styles.name}>Exercise </Text>
       <Text>Steps taken in the last 24 hours: {pastStep}</Text>
-      <Text>Walk! And watch this go up: {currentStep}</Text> 
+      <Text>Steps: {currentStep}</Text> 
+      <Text>Remaining Steps: {10000 - currentStep}</Text> 
 
-      <Text>Total cal: </Text>
-      <Text>Total miles: </Text> 
+      <Text>Total calorie burned: {currentStep * 40/1000}</Text>
+      <Text>Total miles: {currentStep * 1/2000}</Text> 
+      <Text></Text>
+
+      <ScrollView style={{ backgroundColor: "#1f2026" }}>
+      <View>
+        <FitChart
+          title={"Take 10,000 steps a day"}
+          data={stepsData}
+          baseline={10000}
+        />
+      </View>
+
+
+      <View>
+        <FitChart
+          title={"Weight"}
+          data={weightData}
+          baseline={100}
+        />
+      </View>
+
+    </ScrollView>
     
     </View>
-
-      
         
   );
 }
 
 
-
-
-
-
+// <Text>Pedometer.isAvailableAsync(): {isPedometer}</Text>
 
 
 const styles = StyleSheet.create({
@@ -262,11 +256,22 @@ const stepsData = {
   labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
   datasets: [
     {
-      data: [10000, 9000, 2000, 3000, 8000, 11000, 10500, 1000],
+      data: [10000, 9000, 2000, 3000, 8000, 11000, 10500],
       baseline: 10000
     }
   ]
 };
+
+const weightData = {
+  labels: ["Jan", "Feb", "Mar", "April", "May", "Jun"],
+  
+  datasets: [
+    {
+      data: [177, 173, 170, 166, 170, 160],
+      baseline: 150
+    }
+  ]
+}
 
 
 /*
