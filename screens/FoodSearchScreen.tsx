@@ -7,11 +7,11 @@ import axios from "axios";
 
 import EditScreenInfo from '../components/EditScreenInfo';
 
-export default function TabOneScreen() {
+export default function FoodSearchScreen() {
   const navigation = useNavigation();
   const [inputFood, setInputFood] = useState("");
   const [data, setData] = useState([] as any[]);
-  const [foodSelect, setFoodSelect] = useState<any | null>(null);
+  // const [foodSelect, setFoodSelect] = useState<any | null>(null);
   const [error, setError] = React.useState<any | null>("");
   //const [current_user, setCurrent_user] = React.useState(await AsyncStorage.getItem("currentUser"));
   const logout = async () => {
@@ -28,12 +28,13 @@ export default function TabOneScreen() {
       try {
         user = await AsyncStorage.getItem("currentUser");
       } catch (err) {
-        alert(err);
+        setError("not logged in");
       }
     try {
       await AsyncStorage.removeItem("Food" + user);
+      setError("successfully removed food entries");
     } catch (err) {
-      alert(err);
+      setError("remove call errored");
     }
   };
 
@@ -74,9 +75,23 @@ export default function TabOneScreen() {
     
   }
 
-  const addFood = async() => {
-      setError("yep onpress works");
-      //console.log(foodSelect);
+  interface foodObj {
+    "foodId": string,
+    "uri": string,
+    "label": string,
+    "nutrients": {
+      "ENERC_KCAL": number,
+      "PROCNT": number,
+      "FAT": number,
+      "CHOCDF": number,
+      "FIBTG": number
+    },
+    "category": string,
+    "categoryLabel": string,
+    "image": string
+  }
+
+  const addFood = async(food: foodObj) => {    
       var user = null;
       try {
         user = await AsyncStorage.getItem("currentUser");
@@ -94,16 +109,21 @@ export default function TabOneScreen() {
             let day = new Date();
             for (i = 0; i < parsedList.length; i++){
               // food already exists in storage
-              //console.log(parsedList[i]);
-              if (parsedList[i].food.foodId == foodSelect.foodId){
+              console.log(parsedList[i]);
+              if (parsedList[i].foodId == food.foodId){
                 parsedList[i].dates.push(Date.now())
                 found = 1;
-                setError("already added, you've eaten this " + parsedList[i].dates.length + " times!");
+                setError("food: " + parsedList[i].label + ", this is the "+ parsedList[i].dates.length + " time");
               }
             }
             // first time eating
             if (!found){
-              parsedList.push({food: foodSelect, dates: [Date.now()]})
+              parsedList.push({
+                foodId: food.foodId,
+                label: food.label,
+                calories: food.nutrients.ENERC_KCAL,
+                image: food.image,
+                dates: [Date.now()]})
               setError("first time eating");
             }
             AsyncStorage.setItem("Food" + user, JSON.stringify({entries: parsedList}))
@@ -113,9 +133,13 @@ export default function TabOneScreen() {
             await AsyncStorage.setItem(
               "Food" + user,
               JSON.stringify(
-                {entries: [{food: foodSelect, dates: [Date.now()]}]}
+                {entries: [{
+                  foodId: food.foodId,
+                  label: food.label,
+                  calories: food.nutrients.ENERC_KCAL,
+                  image: food.image,
+                  dates: [Date.now()]}]}
               )
-              
             );
             setError("first time eating anything");
           }
@@ -132,33 +156,23 @@ export default function TabOneScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.name}>Food Tab!</Text>
-      <Text>I added a log out button here for convenience. I'll move it to a proper place later.</Text>
-      <TouchableOpacity style={styles.button} onPress={() => logout()}>
-        <Text style={{ color: "white"}}>Log out!</Text>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Diet")}>
+        <Text style={{ color: "white"}}>View Recommendations</Text>
       </TouchableOpacity>
-      <Text>Reset Food Account</Text>
-      <TouchableOpacity style={styles.button} onPress={() => resetFood()}>
-        <Text style={{ color: "white"}}>Reset History!</Text>
+      <TouchableOpacity style={styles.button} onPress={() => {resetFood()}}>
+        <Text style={{ color: "white"}}>Reset Food List</Text>
       </TouchableOpacity>
       <TextInput style={styles.input} onChangeText = {(text) => setInputFood(text)} />
       <TouchableOpacity style={styles.button} onPress={() => {console.log("outside api call function"); searchFood()}}>
       <Text style={{ color: "white"}}>Search Food!</Text>
       </TouchableOpacity>
-      {/* {data.map((item, idx) => (
-        <View key={idx} style={styles.foodEntry}>
-          <Text style={{ color: "black"}}>{item.food.label}</Text>
-          <Text style={{ color: "black"}}>{Math.round(item.food.nutrients.ENERC_KCAL)} Calories</Text>
-          <Image style={styles.foodImage} source={{uri : item.food.image}}/>
-        </View> 
-        ))} */}
       <Text>{error}</Text>
       <FlatList style={styles.foodList}
         data={data}
         renderItem={
           ( { item } ) => (
-          <TouchableOpacity style={styles.foodEntry} onPress={() => {setFoodSelect(item.food); addFood()}}>
-            <Text style={{ color: "black"}}>{item.food.foodId}</Text>
+          <TouchableOpacity style={styles.foodEntry} onPress={() => {addFood(item.food)}}>
+            {/* <Text style={{ color: "black"}}>{item.food.foodId}</Text> */}
             <Text style={{ color: "black"}}>{item.food.label}</Text>
             <Text style={{ color: "black"}}>{Math.round(item.food.nutrients.ENERC_KCAL)} Calories</Text>
             <Image style={styles.foodImage} source={{uri : item.food.image}}/>

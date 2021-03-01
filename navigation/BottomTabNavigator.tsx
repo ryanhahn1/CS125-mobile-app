@@ -8,9 +8,10 @@ import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Button, Aler
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
-import TabOneScreen from '../screens/TabOneScreen';
+import FoodRecommendation from '../screens/FoodRecommendationScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
 import TabThreeScreen from '../screens/TabThreeScreen';
+import FoodSearchScreen from '../screens/FoodSearchScreen';
 import ProfileEditScreen from '../screens/ProfileEditScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import RecommendationScreen from '../screens/Recommendation';
@@ -247,12 +248,17 @@ function TabOneNavigator() {
     <TabOneStack.Navigator>
       <TabOneStack.Screen
         name="Diet"
-        component={TabOneScreen}
+        component={FoodRecommendation}
         options={{ header: () => null }}
       />
       <TabOneStack.Screen 
         name="Login" 
         component={Login} 
+        options={{ header: () => null }}
+      />
+      <TabOneStack.Screen 
+        name="FoodSearch" 
+        component={FoodSearchScreen}
         options={{ header: () => null }}
       />
     </TabOneStack.Navigator>
