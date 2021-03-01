@@ -8,9 +8,9 @@ export default function ProfileScreen() {
   var [input_weight, setWeight] = useState<any | null>(null);
   const [goal, setGoal] = useState<any | null>(null);
   var [input_height, setHeight] = useState<any | null>(null);
-  const [retrieve, setRetrieve] = useState(false);
+  var [gender, setGender] = useState<any | null>(null); 
   const isFocused = useIsFocused(); 
-
+  
   useEffect(() => {
     const updateInfo = async () => {
       get_user_weight()
@@ -24,6 +24,10 @@ export default function ProfileScreen() {
       get_user_goal()
       .then(d => {
           setGoal(d);
+      })
+      get_user_gender()
+      .then(d => {
+        setGender(d);
       })
     }
     updateInfo();
@@ -58,6 +62,16 @@ export default function ProfileScreen() {
           }
       }
     };
+    async function get_user_gender() {
+      let current_user = await AsyncStorage.getItem("currentUser");
+      if (current_user !== null && current_user !== ""){
+          let userdata = await AsyncStorage.getItem(current_user);
+          if (userdata !== null && userdata !== "") {
+          var gender = JSON.parse(userdata).gender;
+          return gender;
+          }
+      }
+    };
     get_user_weight()
     .then(d => {
         setWeight(d);
@@ -70,11 +84,16 @@ export default function ProfileScreen() {
     .then(d => {
         setGoal(d);
     })
-    // setRetrieve(true);
+    get_user_gender()
+      .then(d => {
+        setGender(d);
+    })
+
   
   return (
     <View style={styles.container}>
       <Text style={styles.name}>My Profile</Text>
+        <Text>gender: {gender} </Text>
         <Text>current weight: {input_weight}</Text>
         <Text>current height: {input_height}</Text>
         <Text>current goal: {goal}</Text>

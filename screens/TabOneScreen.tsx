@@ -132,15 +132,15 @@ export default function TabOneScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.name}>Food Tab!</Text>
-      <Text>I added a log out button here for convenience. I'll move it to a proper place later.</Text>
+      <Text style={styles.name}>Food</Text>
+      {/* <Text>I added a log out button here for convenience. I'll move it to a proper place later.</Text>
       <TouchableOpacity style={styles.button} onPress={() => logout()}>
         <Text style={{ color: "white"}}>Log out!</Text>
       </TouchableOpacity>
       <Text>Reset Food Account</Text>
       <TouchableOpacity style={styles.button} onPress={() => resetFood()}>
         <Text style={{ color: "white"}}>Reset History!</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <TextInput style={styles.input} onChangeText = {(text) => setInputFood(text)} />
       <TouchableOpacity style={styles.button} onPress={() => {console.log("outside api call function"); searchFood()}}>
       <Text style={{ color: "white"}}>Search Food!</Text>
@@ -158,7 +158,7 @@ export default function TabOneScreen() {
         renderItem={
           ( { item } ) => (
           <TouchableOpacity style={styles.foodEntry} onPress={() => {setFoodSelect(item.food); addFood()}}>
-            <Text style={{ color: "black"}}>{item.food.foodId}</Text>
+            {/* <Text style={{ color: "black"}}>{item.food.foodId}</Text> */}
             <Text style={{ color: "black"}}>{item.food.label}</Text>
             <Text style={{ color: "black"}}>{Math.round(item.food.nutrients.ENERC_KCAL)} Calories</Text>
             <Image style={styles.foodImage} source={{uri : item.food.image}}/>

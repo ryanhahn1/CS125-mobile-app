@@ -15,7 +15,9 @@ export default function TabThreeScreen() {
   var [curr_weight, setCurrWeight] = useState<any | null>(null);
   const [goal, setGoal] = useState<any | null>(null);
   var [input_height, setHeight] = useState<any | null>(null);
-  const [retrieve, setRetrieve] = useState(false);
+  var [gender, setGender] = useState<any | null>(null); 
+  var [age, setAge] = useState<any | null>(null);
+  var [calorieGoal, setCalorieGoal] = useState<any | null>(null);
   const isFocused = useIsFocused(); 
 
   useEffect(() => {
@@ -32,9 +34,23 @@ export default function TabThreeScreen() {
       .then(d => {
           setGoal(d);
       })
+      get_user_gender()
+      .then(d => {
+        setGender(d);
+      })
+      get_user_age()
+      .then(d => {
+        setAge(d);
+      })
+      get_calorie_goal()
+      .then(d => {
+        setCalorieGoal(d);
+      })
     }
     updateInfo();
   }, [isFocused]);
+
+  
   async function get_user_height() {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
@@ -65,6 +81,26 @@ export default function TabThreeScreen() {
         }
     }
   };
+  async function get_user_gender() {
+    let current_user = await AsyncStorage.getItem("currentUser");
+    if (current_user !== null && current_user !== ""){
+        let userdata = await AsyncStorage.getItem(current_user);
+        if (userdata !== null && userdata !== "") {
+        var gender = JSON.parse(userdata).gender;
+        return gender;
+        }
+    }
+  };
+  async function get_user_age() {
+    let current_user = await AsyncStorage.getItem("currentUser");
+    if (current_user !== null && current_user !== ""){
+        let userdata = await AsyncStorage.getItem(current_user);
+        if (userdata !== null && userdata !== "") {
+        var age = JSON.parse(userdata).age;
+        return age;
+        }
+    }
+  };
   async function set_user_data() {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
@@ -75,10 +111,11 @@ export default function TabThreeScreen() {
         var weight = input_weight == null ? JSON.parse(userdata).weight : input_weight;
         var height = JSON.parse(userdata).height;
         var goal = JSON.parse(userdata).goal;
+        var gender = JSON.parse(userdata).gender;
+        var age = JSON.parse(userdata).age;
         let day = new Date();
         parsedList.push({weight: input_weight, date : day.getDate(), month : day.getMonth()})
-        AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, weight: weight, height: height, goal: goal}))
-        Alert.alert("I tried", current_user);
+        AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, weight: weight, height: height, goal: goal, gender: gender, age: age}))
       } 
     }
   };
@@ -90,9 +127,34 @@ export default function TabThreeScreen() {
         var parsed = JSON.parse(userdata).entries;
         setData(parsed);
       }
-      Alert.alert("I tried", current_user);
     }    
   };
+  const get_calorie_goal = async () => {
+    let current_user = await AsyncStorage.getItem("currentUser");
+    if (current_user !== null && current_user !== ""){
+      let userdata = await AsyncStorage.getItem(current_user);
+      if (userdata !== null) {
+        var gender = JSON.parse(userdata).gender;
+        var weight = JSON.parse(userdata).weight;
+        var height = JSON.parse(userdata).height;
+        var age = JSON.parse(userdata).age;
+        var goal = JSON.parse(userdata).goal;
+        var calorie = 0;
+        if (gender === "Male") {
+          calorie = 1.2 * (10 * weight / 2.205 + 6.25 * height - 5 * age + 5);
+        }else if (gender === "Female") {
+          calorie = 1.2 * (10 * weight / 2.205 + 6.25 *height - 5 * age - 161);
+        }
+        if (goal === "lose weight") {
+          calorie -= 500;
+        }else if (goal === "gain weight") {
+          calorie += 500;
+        }
+        AsyncStorage.setItem(current_user + "Calorie", JSON.stringify(calorie));
+        return calorie;
+      }
+    }    
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.name}>Weight Tab!</Text>
@@ -119,6 +181,9 @@ export default function TabThreeScreen() {
           <Text>Key: {idx + 1} Date: {item.date} {item.month} Weight: {item.weight}</Text>
         ))}
       <Text style={styles.name}>My Profile</Text>
+      <Text>calorie goal: {calorieGoal} </Text>
+      <Text>gender: {gender} </Text>
+      <Text>age: {age} </Text>
       <Text>current weight: {curr_weight}</Text>
       <Text>current height: {input_height}</Text>
       <Text>current goal: {goal}</Text>

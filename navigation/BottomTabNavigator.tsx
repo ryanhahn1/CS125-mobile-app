@@ -36,6 +36,8 @@ function HomeScreen() {
            weight: 0,
            height: 0,
            goal: 'lose weight',
+           gender: "Male",
+           age: 18,
           }
           )
         );

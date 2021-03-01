@@ -9,7 +9,9 @@ import DropDownPicker from 'react-native-dropdown-picker';
 export default function ProfileEditScreen() {
   const navigation = useNavigation();
   const [goal, setGoal] = useState<any | null>(null);
+  const [gender, setGender] = useState<any | null>(null);
   var [input_height, setHeight] = useState<any | null>(null);
+  var [input_age, setAge] = useState<any | null>(null);
   
   const set_user_goal = async (Goal : string) => {
     let current_user = await AsyncStorage.getItem("currentUser");
@@ -17,10 +19,28 @@ export default function ProfileEditScreen() {
       let userdata = await AsyncStorage.getItem(current_user);
       if (userdata !== null && userdata !== "" && Goal) {
         setGoal(Goal);
+        var gender = JSON.parse(userdata).gender;
         var parsedList = JSON.parse(userdata).entries;
         var weight = JSON.parse(userdata).weight;
         var height = JSON.parse(userdata).height;
-        AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, weight: weight, height: height, goal: Goal}))
+        var age = JSON.parse(userdata).age;
+        AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, weight: weight, height: height, goal: Goal, gender: gender, age: age}))
+      }
+    }
+  };
+
+  const set_user_gender = async (gender : string) => {
+    let current_user = await AsyncStorage.getItem("currentUser");
+    if (current_user !== null && current_user !== ""){
+      let userdata = await AsyncStorage.getItem(current_user);
+      if (userdata !== null && userdata !== "" && gender) {
+        setGender(gender);
+        var goal = JSON.parse(userdata).goal;
+        var parsedList = JSON.parse(userdata).entries;
+        var weight = JSON.parse(userdata).weight;
+        var height = JSON.parse(userdata).height;
+        var age = JSON.parse(userdata).age;
+        AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, weight: weight, height: height, goal: goal, gender: gender, age: age}))
       }
     }
   };
@@ -32,9 +52,11 @@ export default function ProfileEditScreen() {
       if (userdata !== null && userdata !== "") {
         var parsedList = JSON.parse(userdata).entries;
         var weight = JSON.parse(userdata).weight;
-        var height = input_height == null ? JSON.parse(userdata).height : input_height;
+        var height = (input_height == null) ? JSON.parse(userdata).height : input_height;
         var goal = JSON.parse(userdata).goal;
-        AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, weight: weight, height: height, goal: goal}))
+        var gender = JSON.parse(userdata).gender;
+        var age = (input_age == null) ? JSON.parse(userdata).age : input_age;
+        AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, weight: weight, height: height, goal: goal, gender: gender, age: age}))
       }
     }
     navigation.navigate("Progress")
@@ -59,8 +81,25 @@ export default function ProfileEditScreen() {
           dropDownStyle={{backgroundColor: '#fafafa'}}
           onChangeItem={item => set_user_goal(item.value)}
       />
+      <Text>Gender:</Text>
+      <DropDownPicker 
+          items={[
+              {label: 'Male', value: 'Male'},
+              {label: 'Female', value: 'Female'},
+          ]}
+          defaultValue={'Male'}
+          containerStyle={{height: 40}}
+          style={{backgroundColor: '#fafafa'}}
+          itemStyle={{
+              justifyContent: 'flex-start'
+          }}
+          dropDownStyle={{backgroundColor: '#fafafa'}}
+          onChangeItem={item => set_user_gender(item.value)}
+      />
       <Text style={styles.name}>Input Your Current Height in cm!</Text>
       <TextInput style={styles.input} onChangeText = {(text) => setHeight(text)} />
+      <Text style={styles.name}>Input Your Current Age!</Text>
+      <TextInput style={styles.input} onChangeText = {(text) => setAge(text)} />
       <TouchableOpacity style={styles.button} onPress={() => save_user_info()}>
       <Text style={{ color: "white"}}>Save profile</Text>
       </TouchableOpacity>
