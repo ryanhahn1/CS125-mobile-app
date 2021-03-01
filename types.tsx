@@ -18,6 +18,7 @@ export type BottomTabParamList = {
 export type TabOneParamList = {
   Diet: undefined;
   Login: undefined;
+  FoodSearch: undefined;
 };
 
 export type TabTwoParamList = {
