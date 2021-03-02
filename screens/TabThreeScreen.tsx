@@ -157,7 +157,7 @@ export default function TabThreeScreen() {
   }
   return (
     <View style={styles.container}>
-      <Text style={styles.name}>Weight Tab!</Text>
+      {/* <Text style={styles.name}>Weight Tab!</Text> */}
       {/* <TextInput style={styles.input} onChangeText = {(text) => setName(text)} /> */}
       <Text style={styles.name}>Input Your Current Weight!</Text>
       <TextInput style={styles.input} onChangeText = {(text) => setWeight(text)} />
@@ -201,6 +201,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
     fontSize: 20,

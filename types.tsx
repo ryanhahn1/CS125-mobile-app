@@ -7,6 +7,7 @@ export type AppParamList = {
   Home: undefined;
   App: undefined;
   Login: undefined;
+  SurveyForm: undefined;
 }
 
 export type BottomTabParamList = {

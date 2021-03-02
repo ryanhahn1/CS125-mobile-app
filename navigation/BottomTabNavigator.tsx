@@ -15,12 +15,12 @@ import FoodSearchScreen from '../screens/FoodSearchScreen';
 import ProfileEditScreen from '../screens/ProfileEditScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import RecommendationScreen from '../screens/Recommendation';
-import { BottomTabParamList, TabOneParamList, TabTwoParamList, TabThreeParamList, AppParamList, ProfileParamList } from '../types';
+import { BottomTabParamList, TabOneParamList, TabTwoParamList, TabThreeParamList, AppParamList, SurveyParamList} from '../types';
 
+import SurveyScreen from '../screens/SurveyScreen';
 
 import { Center } from '../src/Center';
 import { withSafeAreaInsets } from 'react-native-safe-area-context';
-import App from '../App';
 
 function HomeScreen() {
   const navigation = useNavigation();
@@ -94,7 +94,7 @@ function HomeScreen() {
           await AsyncStorage.setItem("currentUser",name);
           await addAccount();
           await save();
-          navigation.navigate('App');
+          navigation.navigate('SurveyForm');
           setError("");
         }
       }
@@ -133,13 +133,22 @@ export default function AppNavigator() {
       initialRouteName="Login">
         <EntireApp.Screen 
           name= "Home"
-          component={HomeScreen}/>
+          component={HomeScreen}
+          options={{ header: () => null }}/>
         <EntireApp.Screen 
           name= "Login"
-          component={Login}/>
+          component={Login}
+          options={{ header: () => null }}/>
         <EntireApp.Screen 
           name= "App"
-          component={BottomTabNavigator}/>
+          component={BottomTabNavigator}
+          options={{ 
+            title: "",
+            headerLeft: () => null }}/>
+        <EntireApp.Screen 
+          name = "SurveyForm"
+          component={SurveyScreen}
+          options={{ header: () => null }}/>
     </EntireApp.Navigator>
   );
 }
