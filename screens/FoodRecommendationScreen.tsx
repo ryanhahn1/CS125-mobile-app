@@ -35,10 +35,26 @@ export default function FoodRecommendationScreen() {
     entries: [],
   }
 
-  function compareFoods(a: foodEntry, b: foodEntry) {
-    if (a.calories > b.calories) return 1;
-    if (b.calories > a.calories) return -1;
-  
+  const compareFoods = async(a: foodEntry, b: foodEntry) => {
+    var user = null;
+    var calorieGoal = null;
+    var temp = null;
+    try {
+      user = await AsyncStorage.getItem("currentUser");
+    } catch (err) {
+      alert(err);
+    }
+    try {
+      temp = await AsyncStorage.getItem(user + "Calorie");
+      if (temp) {
+        calorieGoal = parseInt(temp);
+        if (Math.abs(calorieGoal / 3 - a.calories) > Math.abs(calorieGoal / 3 - b.calories)) return 1;
+        if (Math.abs(calorieGoal / 3 - b.calories) > Math.abs(calorieGoal / 3 - a.calories)) return -1;
+      }
+    } catch (err) {
+      alert(err);
+    }
+    
     return 0;
   }
 
@@ -54,7 +70,7 @@ export default function FoodRecommendationScreen() {
       // pull and add to food info
       if (userdata !== null){
         var parsedList = JSON.parse(userdata).entries;
-        return parsedList.sort(compareFoods)
+        return parsedList.sort(compareFoods).slice(0, 5);
       }
     } catch (err) {
       return [];

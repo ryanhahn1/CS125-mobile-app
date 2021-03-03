@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer, useNavigation } from "@react-navigation/native"
+import { NavigationContainer, useNavigation, useIsFocused } from "@react-navigation/native"
 import * as React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Button, Alert} from 'react-native';
@@ -202,6 +202,18 @@ function Login() {
   const [name, setName] = React.useState<any | null>(null);
   const [password, setPassword] = React.useState<any | null>(null);
   const [error, setError] = React.useState<any | null>("");
+  const isFocused = useIsFocused(); 
+  React.useEffect(() => {
+    const updateInfo = async () => {
+      AsyncStorage.getItem("currentUser")
+      .then(d => {
+          if (d != null){
+            navigation.navigate('App');
+          }
+      })
+    }
+    updateInfo();
+  }, [isFocused]);
   
   const login = async () => {
     try {
