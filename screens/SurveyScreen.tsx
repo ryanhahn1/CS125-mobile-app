@@ -13,13 +13,13 @@ export default function SurveyScreen() {
   var [input_height, setHeight] = useState<any | null>(null);
   var [input_weight, setWeight] = useState<any | null>(null);
   var [input_age, setAge] = useState<any | null>(null);
+  var [input_exercise, setExercise] = useState<any | null>(null);
   
   const set_user_goal = async (Goal : string) => {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
       let userdata = await AsyncStorage.getItem(current_user);
       if (userdata !== null && userdata !== "" && Goal) {
-        setGoal(Goal);
         var gender = JSON.parse(userdata).gender;
         var parsedList = JSON.parse(userdata).entries;
         var weight = JSON.parse(userdata).weight;
@@ -30,12 +30,21 @@ export default function SurveyScreen() {
     }
   };
 
+  const set_user_fitness_goal = async (fitness: number) => {
+    let current_user = await AsyncStorage.getItem("currentUser");
+    if (current_user !== null && current_user !== ""){
+      let userdata = await AsyncStorage.getItem(current_user);
+      if (userdata !== null && userdata !== "" && fitness) {
+        AsyncStorage.setItem(current_user + "Fitness", JSON.stringify({fitness: fitness}))
+      }
+    }
+  };
+
   const set_user_gender = async (gender : string) => {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
       let userdata = await AsyncStorage.getItem(current_user);
       if (userdata !== null && userdata !== "" && gender) {
-        setGender(gender);
         var goal = JSON.parse(userdata).goal;
         var parsedList = JSON.parse(userdata).entries;
         var weight = JSON.parse(userdata).weight;
@@ -100,6 +109,25 @@ export default function SurveyScreen() {
                 }}
                 dropDownStyle={{backgroundColor: '#fafafa'}}
                 onChangeItem={item => set_user_gender(item.value)}
+            />
+        </View>
+        <View style = {{flex: 1}}>
+            <Text>How much would you want to exercise?</Text>
+            <DropDownPicker 
+                items={[
+                    {label: 'Light exercise 1-2 times a week', value: 1.2},
+                    {label: 'Moderate exercise 2-3 times a week', value: 1.375},
+                    {label: 'Hard exercise 4-5 times a week', value: 1.55},
+                    {label: 'Athlete exercise 6-7 times a week', value: 1.725}
+                ]}
+                //   defaultValue={'lose weight'}
+                containerStyle={{height: 40}}
+                style={{backgroundColor: '#fafafa'}}
+                itemStyle={{
+                    justifyContent: 'flex-start'
+                }}
+                dropDownStyle={{backgroundColor: '#fafafa'}}
+                onChangeItem={item => set_user_fitness_goal(item.value)}
             />
         </View>
       </View>

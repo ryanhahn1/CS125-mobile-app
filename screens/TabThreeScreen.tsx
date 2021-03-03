@@ -18,6 +18,7 @@ export default function TabThreeScreen() {
   var [gender, setGender] = useState<any | null>(null); 
   var [age, setAge] = useState<any | null>(null);
   var [calorieGoal, setCalorieGoal] = useState<any | null>(null);
+  var [calorieBurnGoal, setCalorieBurnGoal] = useState<any | null>(null);
   const isFocused = useIsFocused(); 
 
   useEffect(() => {
@@ -45,6 +46,10 @@ export default function TabThreeScreen() {
       get_calorie_goal()
       .then(d => {
         setCalorieGoal(d);
+      })
+      get_calorie_burned_goal()
+      .then(d => {
+        setCalorieBurnGoal(d);
       })
     }
     updateInfo();
@@ -133,17 +138,19 @@ export default function TabThreeScreen() {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
       let userdata = await AsyncStorage.getItem(current_user);
-      if (userdata !== null) {
+      let fitnessdata = await AsyncStorage.getItem(current_user + "Fitness");
+      if (userdata !== null && fitnessdata !== null) {
         var gender = JSON.parse(userdata).gender;
         var weight = JSON.parse(userdata).weight;
         var height = JSON.parse(userdata).height;
         var age = JSON.parse(userdata).age;
         var goal = JSON.parse(userdata).goal;
+        var fitness = JSON.parse(fitnessdata).fitness;
         var calorie = 0;
         if (gender === "Male") {
-          calorie = 1.2 * (10 * weight / 2.205 + 6.25 * height - 5 * age + 5);
+          calorie = fitness * (10 * weight / 2.205 + 6.25 * height - 5 * age + 5);
         }else if (gender === "Female") {
-          calorie = 1.2 * (10 * weight / 2.205 + 6.25 *height - 5 * age - 161);
+          calorie = fitness * (10 * weight / 2.205 + 6.25 *height - 5 * age - 161);
         }
         if (goal === "lose weight") {
           calorie -= 500;
@@ -154,7 +161,19 @@ export default function TabThreeScreen() {
         return calorie;
       }
     }    
-  }
+  };
+  const get_calorie_burned_goal = async () => {
+    let current_user = await AsyncStorage.getItem("currentUser");
+    if (current_user !== null && current_user !== ""){
+      let userdata = await AsyncStorage.getItem(current_user + "Fitness");
+      if (userdata !== null) {
+        var fitness = JSON.parse(userdata).fitness;
+        return fitness - 1.2;
+      }
+    }    
+  };
+
+
   return (
     <View style={styles.container}>
       {/* <Text style={styles.name}>Weight Tab!</Text> */}
@@ -181,7 +200,8 @@ export default function TabThreeScreen() {
           <Text>Key: {idx + 1} Date: {item.date} {item.month} Weight: {item.weight}</Text>
         ))}
       <Text style={styles.name}>My Profile</Text>
-      <Text>calorie goal: {calorieGoal} </Text>
+      <Text>calorie goal: {Math.round(calorieGoal)} </Text>
+      <Text>calorie burned goal: {Math.round(calorieGoal * calorieBurnGoal)}</Text>
       <Text>gender: {gender} </Text>
       <Text>age: {age} </Text>
       <Text>current weight: {curr_weight}</Text>

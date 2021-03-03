@@ -45,6 +45,16 @@ export default function ProfileEditScreen() {
     }
   };
 
+  const set_user_fitness_goal = async (fitness : number) => {
+    let current_user = await AsyncStorage.getItem("currentUser");
+    if (current_user !== null && current_user !== ""){
+      let userdata = await AsyncStorage.getItem(current_user + "Fitness");
+      if (userdata !== null && userdata !== "" && gender) {
+        AsyncStorage.setItem(current_user + "Fitness", JSON.stringify({fitness: fitness}))
+      }
+    }
+  };
+
   async function save_user_info() {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
@@ -72,7 +82,7 @@ export default function ProfileEditScreen() {
               {label: 'Gain Weight', value: 'gain weight'},
               {label: 'Maintain Weight', value: 'maintain weight'},
           ]}
-          defaultValue={'lose weight'}
+          // defaultValue={'lose weight'}
           containerStyle={{height: 40}}
           style={{backgroundColor: '#fafafa'}}
           itemStyle={{
@@ -87,7 +97,7 @@ export default function ProfileEditScreen() {
               {label: 'Male', value: 'Male'},
               {label: 'Female', value: 'Female'},
           ]}
-          defaultValue={'Male'}
+          // defaultValue={'Male'}
           containerStyle={{height: 40}}
           style={{backgroundColor: '#fafafa'}}
           itemStyle={{
@@ -95,6 +105,23 @@ export default function ProfileEditScreen() {
           }}
           dropDownStyle={{backgroundColor: '#fafafa'}}
           onChangeItem={item => set_user_gender(item.value)}
+      />
+      <Text>Fitness goal:</Text>
+      <DropDownPicker 
+          items={[
+            {label: 'Light exercise 1-2 times a week', value: 1.2},
+            {label: 'Moderate exercise 2-3 times a week', value: 1.375},
+            {label: 'Hard exercise 4-5 times a week', value: 1.55},
+            {label: 'Athlete exercise 6-7 times a week', value: 1.725}
+          ]}
+          // defaultValue={'Male'}
+          containerStyle={{height: 40}}
+          style={{backgroundColor: '#fafafa'}}
+          itemStyle={{
+              justifyContent: 'flex-start'
+          }}
+          dropDownStyle={{backgroundColor: '#fafafa'}}
+          onChangeItem={item => set_user_fitness_goal(item.value)}
       />
       <Text style={styles.name}>Input Your Current Height in cm!</Text>
       <TextInput style={styles.input} onChangeText = {(text) => setHeight(text)} />
