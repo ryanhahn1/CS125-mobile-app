@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Button, Alert, FlatList} from 'react-native';
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { NavigationContainer, useNavigation, useRoute, useIsFocused, RouteProp } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
@@ -13,7 +13,7 @@ export default function FoodSearchScreen() {
   const [data, setData] = useState([] as any[]);
   // const [foodSelect, setFoodSelect] = useState<any | null>(null);
   const [error, setError] = React.useState<any | null>("");
-  //const [current_user, setCurrent_user] = React.useState(await AsyncStorage.getItem("currentUser"));
+  //const [current_user, setCurrent_user] = React.useState(await AsyncStorage.getItem("currentUser"))
   const logout = async () => {
     try {
       await AsyncStorage.removeItem("currentUser");
@@ -156,13 +156,14 @@ export default function FoodSearchScreen() {
 
   return (
     <View style={styles.container}>
+      <TextInput style={styles.input} onChangeText = {(text) => setInputFood(text)} placeholder = {"Search for a food"} onSubmitEditing = {() => {searchFood()}}/>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Diet")}>
         <Text style={{ color: "white"}}>View Recommendations</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => {resetFood()}}>
         <Text style={{ color: "white"}}>Reset Food List</Text>
       </TouchableOpacity>
-      <TextInput style={styles.input} onChangeText = {(text) => setInputFood(text)} />
+      
       <TouchableOpacity style={styles.button} onPress={() => {console.log("outside api call function"); searchFood()}}>
       <Text style={{ color: "white"}}>Search Food!</Text>
       </TouchableOpacity>
@@ -242,5 +243,9 @@ const styles = StyleSheet.create({
   foodList: {
     alignSelf: "stretch",
     flex: 0,
+  },
+  searchHeader: {
+    backgroundColor: "#D3D3D3",
+    width: "100%",
   }
 });
