@@ -10,10 +10,16 @@ export type AppParamList = {
   SurveyForm: undefined;
 }
 
+export type ProfileParamList = {
+  Profile: undefined;
+  ProfileEdit: undefined;
+};
+
 export type BottomTabParamList = {
   Diet: undefined;
   Exercise: undefined;
   Progress: undefined;
+  Profile: undefined;
 };
 
 export type TabOneParamList = {

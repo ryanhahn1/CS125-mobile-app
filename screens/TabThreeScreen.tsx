@@ -5,10 +5,11 @@ import EditScreenInfo from '../components/EditScreenInfo';
 //import { Text, View } from '../components/Themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import { FlatList } from 'react-native-gesture-handler';
 
 
 export default function TabThreeScreen() {
-  //const [name, setName] = useState<any | null>(null);
   const [data, setData] = useState([] as any[]);
   const navigation = useNavigation();
   var [input_weight, setWeight] = useState<any | null>(null);
@@ -53,9 +54,33 @@ export default function TabThreeScreen() {
       })
     }
     updateInfo();
+    load_user_data();
   }, [isFocused]);
 
-  
+
+  // function getExerciseData() {
+  //   const url = "https://trackapi.nutritionix.com/v2/natural/exercise";
+  //   axios.post(url, {
+  //     body: {
+  //       "query": "ran 4 miles",
+  //       "gender":"female",
+  //       "weight_kg":72.5,
+  //       "height_cm":167.64,
+  //       "age":30
+  //     },
+  //     headers: {
+  //       "x-app-id": "c813a65e",
+  //       "x-app-key": "bcba6cff6834136cd676de29587f3827",
+  //       "Content-Type": "application/json"
+  //     }
+  //   }).then((response) => {
+  //     console.log(response);
+  //   })
+  //   .catch((response) => {
+  //       console.log(response);
+  //   })
+  // }
+    
   async function get_user_height() {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
@@ -134,6 +159,7 @@ export default function TabThreeScreen() {
       }
     }    
   };
+
   const get_calorie_goal = async () => {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
@@ -145,7 +171,7 @@ export default function TabThreeScreen() {
         var height = JSON.parse(userdata).height;
         var age = JSON.parse(userdata).age;
         var goal = JSON.parse(userdata).goal;
-        var fitness = JSON.parse(fitnessdata).fitness;
+        var fitness = JSON.parse(fitnessdata).fitnessLevel;
         var calorie = 0;
         if (gender === "Male") {
           calorie = fitness * (10 * weight / 2.205 + 6.25 * height - 5 * age + 5);
@@ -167,7 +193,7 @@ export default function TabThreeScreen() {
     if (current_user !== null && current_user !== ""){
       let userdata = await AsyncStorage.getItem(current_user + "Fitness");
       if (userdata !== null) {
-        var fitness = JSON.parse(userdata).fitness;
+        var fitness = JSON.parse(userdata).fitnessLevel;
         return fitness - 1.2;
       }
     }    
@@ -176,40 +202,32 @@ export default function TabThreeScreen() {
 
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.name}>Weight Tab!</Text> */}
-      {/* <TextInput style={styles.input} onChangeText = {(text) => setName(text)} /> */}
-      <Text style={styles.name}>Input Your Current Weight!</Text>
-      <TextInput style={styles.input} onChangeText = {(text) => setWeight(text)} />
+      <Text style={styles.name}>Progress</Text>
+      <TextInput 
+        placeholder= 'input your weight'
+        keyboardType='numeric'
+        returnKeyType='done'
+        style={styles.input} 
+        onChangeText = {(text) => setWeight(text)} />
       <TouchableOpacity style={styles.button} onPress={() => set_user_data()}>
-        <Text style={{ color: "white"}}>Add my data!</Text>
+        <Text style={{ color: "white"}}>+</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => load_user_data()}>
-        <Text style={{ color: "white"}}>Load my data!</Text>
-      </TouchableOpacity>
-      {/* <FlatList
-          data={data}
+
+      <Text style={styles.title}>Entries</Text>
+      <FlatList
+          data={data.slice(0, 4)}
           renderItem={( { item } ) => (
-            <View>
-              <Text>{"Weight: " + item.weight}</Text>
+            <View style={styles.entries}>
+              <Text>{item.weight + " lbs"}</Text>
               <Text>{item.month + "/" + item.date}</Text>
             </View>
-            )
+          )
           }
-          ></FlatList> */}
-      {data.map((item, idx) => (
-          <Text>Key: {idx + 1} Date: {item.date} {item.month} Weight: {item.weight}</Text>
-        ))}
-      <Text style={styles.name}>My Profile</Text>
+      />
+     
       <Text>calorie goal: {Math.round(calorieGoal)} </Text>
       <Text>calorie burned goal: {Math.round(calorieGoal * calorieBurnGoal)}</Text>
-      <Text>gender: {gender} </Text>
-      <Text>age: {age} </Text>
-      <Text>current weight: {curr_weight}</Text>
-      <Text>current height: {input_height}</Text>
-      <Text>current goal: {goal}</Text>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ProfileEdit")}>
-      <Text style={{ color: "white"}}>Edit profile!</Text>
-      </TouchableOpacity>
+
     </View>
   );
   // }
@@ -220,16 +238,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: 'center',
-    justifyContent: 'center',
+    // alignItems: 'center',
+  },
+  entries: {
+    flex: 1,
+    // alignSelf: "stretch",
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderRadius: 1,
+    backgroundColor: "white",
+    borderColor: "gray"
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    flex: 1,
+    // alignSelf: "stretch",
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderTopWidth: 1,
+    backgroundColor: "white",
+    borderColor: "gray"
+
   },
   name: {
     fontSize: 24,
     fontWeight: "300",
+    alignSelf: 'center',
   },
   input: {
     borderWidth: 1,
@@ -248,7 +282,6 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     paddingVertical: 12,
     paddingHorizontal: 32,
-    marginTop: 16,
     marginHorizontal: 32,
     borderRadius: 6,
   },

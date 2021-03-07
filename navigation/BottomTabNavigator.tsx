@@ -15,7 +15,7 @@ import FoodSearchScreen from '../screens/FoodSearchScreen';
 import ProfileEditScreen from '../screens/ProfileEditScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import RecommendationScreen from '../screens/Recommendation';
-import { BottomTabParamList, TabOneParamList, TabTwoParamList, TabThreeParamList, AppParamList, SurveyParamList} from '../types';
+import { BottomTabParamList, TabOneParamList, TabTwoParamList, TabThreeParamList, AppParamList, ProfileParamList} from '../types';
 
 import SurveyScreen from '../screens/SurveyScreen';
 
@@ -183,10 +183,10 @@ function BottomTabNavigator() {
         //   tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
         // }}
       />
-      {/* <BottomTab.Screen 
-        name="Recommendation"
-        component={RecommendationScreen}
-      /> */}
+      <BottomTab.Screen 
+        name="Profile"
+        component={ProfileNavigator}
+      />
     </BottomTab.Navigator>
   );
 }
@@ -312,33 +312,29 @@ function TabThreeNavigator() {
         component={TabThreeScreen}
         options={{ header: () => null }}
       />
-      <TabThreeStack.Screen
-        name="ProfileEdit"
-        component={ProfileEditScreen}
-        options={{ header: () => null }}
-      />
     </TabThreeStack.Navigator>
   );
 }
 
-// const ProfileStack = createStackNavigator<ProfileParamList>();
+const ProfileStack = createStackNavigator<ProfileParamList>();
 
-// function ProfileNavigator() {
-//   return (
-//     <ProfileStack.Navigator>
-//       <ProfileStack.Screen 
-//         name="Profile"
-//         component={ProfileScreen}
-//         options={{ header: () => null }}
-//       />
-//       <ProfileStack.Screen 
-//         name="ProfileEdit"
-//         component={ProfileEditScreen}
-//         options={{ header: () => null }}
-//       />
-//     </ProfileStack.Navigator>
-//   );
-// }
+function ProfileNavigator() {
+  return (
+    <ProfileStack.Navigator
+      initialRouteName="Profile">
+      <ProfileStack.Screen 
+        name="Profile"
+        component={ProfileScreen}
+        options={{ header: () => null }}
+      />
+      <ProfileStack.Screen 
+        name="ProfileEdit"
+        component={ProfileEditScreen}
+        options={{ header: () => null }}
+      />
+    </ProfileStack.Navigator>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
