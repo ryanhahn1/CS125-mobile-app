@@ -18,15 +18,15 @@ export default function FoodRecommendationScreen() {
   const [data, setData] = useState([] as any[]);
   const isFocused = useIsFocused(); 
   const [displayList, setDisplayList] = useState(1); // 1 for recommendation, 0 for search
+  const updateInfo = async () => {
+    setFoodSelect([]);
+    getRecommendation()
+    .then(d => {
+        setRecommendations(d);
+    })
+  }
   //const [current_user, setCurrent_user] = React.useState(await AsyncStorage.getItem("currentUser"));
   useEffect(() => {
-    const updateInfo = async () => {
-      setFoodSelect([]);
-      getRecommendation()
-      .then(d => {
-          setRecommendations(d);
-      })
-    }
     updateInfo();
   }, [isFocused]);
 
@@ -285,7 +285,7 @@ export default function FoodRecommendationScreen() {
         </View>
         :
         <View style={styles.searchDiv}>
-          <TouchableOpacity style={styles.smallButton} onPress={() => setDisplayList(1)}>
+          <TouchableOpacity style={styles.smallButton} onPress={() => {updateInfo(); setDisplayList(1)}}>
             <Text style={{ color: "white", fontSize: 25}}>Back</Text>
           </TouchableOpacity>
           <TextInput

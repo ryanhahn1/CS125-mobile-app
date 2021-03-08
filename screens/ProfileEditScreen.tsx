@@ -59,6 +59,10 @@ export default function ProfileEditScreen() {
       .then(d => {
         setName(d);
       })
+      get_user_age()
+      .then(d => {
+        setAge(d);
+      })
       get_user_weight()
       .then(d => {
           setWeight(d);
@@ -82,6 +86,17 @@ export default function ProfileEditScreen() {
   async function get_user_name () {
     let current_user = await AsyncStorage.getItem("currentUser");
     return current_user;
+  };
+
+  async function get_user_age() {
+    let current_user = await AsyncStorage.getItem("currentUser");
+    if (current_user !== null && current_user !== ""){
+        let userdata = await AsyncStorage.getItem(current_user);
+        if (userdata !== null && userdata !== "") {
+        var age = JSON.parse(userdata).age;
+        return age;
+        }
+    }
   };
 
   async function get_user_height() {
@@ -155,8 +170,7 @@ export default function ProfileEditScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.name}>Profile</Text>
-      <TouchableOpacity style={[styles.profileInfo, {marginTop: 16}]}>
+      <TouchableOpacity style={styles.profileInfo}>
         <View style={styles.infobox}>
           <Text style={{ color: "black"}}>User Name</Text>
           <View style={{flex: 1}}>
@@ -166,6 +180,21 @@ export default function ProfileEditScreen() {
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.profileInfo}>
+        <View style={styles.infobox}>
+            <Text style={{ color: "black"}}>Age</Text>
+            <View style={{flex: 1}}>
+              <TextInput 
+                textAlign = 'right'
+                placeholder= {input_age}
+                keyboardType='numeric'
+                returnKeyType='done'
+                onChangeText={(item) => setAge(item)}
+              />
+            </View>
+        </View>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={[styles.profileInfo , {borderBottomWidth: 1}]}>
         <View style={styles.infobox}>
             <Text style={{ color: "black"}}>Height (cm)</Text>
             <View style={{flex: 1}}>
@@ -186,11 +215,6 @@ export default function ProfileEditScreen() {
         items={genderList}
         onChange={(item) => setGender(item)}
       />
-      <DatePicker
-        title="Date of Birth"
-        onChange={(date) => console.log(date)}
-        mode = "spinner"
-      />
       <ListPicker
         title="Goal"
         defaultValue={input_goal}
@@ -198,7 +222,7 @@ export default function ProfileEditScreen() {
         onChange={(item) => setGoal(item)}
       />
       <ListPicker
-        title="Fitness"
+        title="Fitness Goal"
         defaultValue={input_fitness}
         items={fitnessList}
         onChange={(item) => set_fitness_goal(item)}
@@ -223,7 +247,7 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     paddingVertical: 12,
     paddingHorizontal: 14,
-    borderWidth: 1,
+    borderTopWidth: 1,
     borderRadius: 1,
     backgroundColor: "white",
     // borderColor: "gray"

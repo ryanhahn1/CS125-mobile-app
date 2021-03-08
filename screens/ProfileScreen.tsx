@@ -115,8 +115,7 @@ export default function ProfileScreen() {
     };
   return (
     <View style={styles.container}>
-      <Text style={styles.name}>Profile</Text>
-      <TouchableOpacity style={[styles.profileInfo, {marginTop: 16}]}>
+      <TouchableOpacity style={styles.profileInfo}>
         <View style={styles.infobox}>
           <Text style={{ color: "black"}}>User Name</Text>
           <View style={{flex: 1}}>
@@ -129,7 +128,7 @@ export default function ProfileScreen() {
         <View style={styles.infobox}>
           <Text style={{ color: "black"}}>Age</Text>
           <View style={{flex: 1}}>
-            <Text style={{ textAlign: "right", color: "blue"}}>{input_age}</Text>
+            <Text style={{ textAlign: "right", color: "blue"}}>{input_age} years old</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -137,7 +136,7 @@ export default function ProfileScreen() {
       <View style={styles.infobox}>
           <Text style={{ color: "black"}}>Weight</Text>
           <View style={{flex: 1}}>
-            <Text style={{ textAlign: "right", color: "blue"}}>{input_weight}</Text>
+            <Text style={{ textAlign: "right", color: "blue"}}>{input_weight} lbs</Text>
           </View>
       </View>
       </TouchableOpacity>
@@ -145,7 +144,7 @@ export default function ProfileScreen() {
       <View style={styles.infobox}>
           <Text style={{ color: "black"}}>Height</Text>
           <View style={{flex: 1}}>
-            <Text style={{ textAlign: "right", color: "blue"}}>{input_height}</Text>
+            <Text style={{ textAlign: "right", color: "blue"}}>{input_height} cm</Text>
           </View>
         </View>
       </TouchableOpacity>  

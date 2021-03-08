@@ -1,60 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert} from 'react-native';
-
-import EditScreenInfo from '../components/EditScreenInfo';
-//import { Text, View } from '../components/Themed';
+import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert, Modal, Button} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { FlatList } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import ExerciseRecommendation from '../screens/ExerciseRecommendation';
+// import Modal from 'react-native-modal';
+import {
+  DateRangePicker,
+  DatePicker,
+  TimePicker,
+  DateTimePicker,
+  ListPicker,
+  NumberPicker,
+} from 'react-native-ultimate-modal-picker';
 
 
 export default function TabThreeScreen() {
+  const [isModalVisible, setModalVisible] = useState(false);
   const [data, setData] = useState([] as any[]);
-  const navigation = useNavigation();
   var [input_weight, setWeight] = useState<any | null>(null);
-  var [curr_weight, setCurrWeight] = useState<any | null>(null);
-  const [goal, setGoal] = useState<any | null>(null);
-  var [input_height, setHeight] = useState<any | null>(null);
-  var [gender, setGender] = useState<any | null>(null); 
-  var [age, setAge] = useState<any | null>(null);
-  var [calorieGoal, setCalorieGoal] = useState<any | null>(null);
-  var [calorieBurnGoal, setCalorieBurnGoal] = useState<any | null>(null);
   const isFocused = useIsFocused(); 
 
-  useEffect(() => {
-    const updateInfo = async () => {
-      get_user_weight()
-      .then(d => {
-          setCurrWeight(d);
-      })
-      get_user_height()
-      .then(d => {
-          setHeight(d);
-      })
-      get_user_goal()
-      .then(d => {
-          setGoal(d);
-      })
-      get_user_gender()
-      .then(d => {
-        setGender(d);
-      })
-      get_user_age()
-      .then(d => {
-        setAge(d);
-      })
-      get_calorie_goal()
-      .then(d => {
-        setCalorieGoal(d);
-      })
-      get_calorie_burned_goal()
-      .then(d => {
-        setCalorieBurnGoal(d);
-      })
-    }
-    updateInfo();
+  const updateInfo = async () => {
+    setData([]);
+    get_user_weight()
+    .then(d => {
+        setWeight(d);
+    })
     load_user_data();
+  };
+
+  useEffect(() => {
+    updateInfo();
   }, [isFocused]);
 
 
@@ -81,70 +60,31 @@ export default function TabThreeScreen() {
   //   })
   // }
     
-  async function get_user_height() {
-    let current_user = await AsyncStorage.getItem("currentUser");
-    if (current_user !== null && current_user !== ""){
-        let userdata = await AsyncStorage.getItem(current_user);
-        if (userdata !== null && userdata !== "") {
-        var height = JSON.parse(userdata).height;
-        return height;
-        }
-    }
-  };
   async function get_user_weight() {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
         let userdata = await AsyncStorage.getItem(current_user);
         if (userdata !== null && userdata !== "") {
-        var weight = JSON.parse(userdata).weight;
-        return weight;
+          var weight = JSON.parse(userdata).weight;
+          return weight;
         }
     }
   };
-  async function get_user_goal() {
-    let current_user = await AsyncStorage.getItem("currentUser");
-    if (current_user !== null && current_user !== ""){
-        let userdata = await AsyncStorage.getItem(current_user);
-        if (userdata !== null && userdata !== "") {
-        var goal = JSON.parse(userdata).goal;
-        return goal;
-        }
-    }
-  };
-  async function get_user_gender() {
-    let current_user = await AsyncStorage.getItem("currentUser");
-    if (current_user !== null && current_user !== ""){
-        let userdata = await AsyncStorage.getItem(current_user);
-        if (userdata !== null && userdata !== "") {
-        var gender = JSON.parse(userdata).gender;
-        return gender;
-        }
-    }
-  };
-  async function get_user_age() {
-    let current_user = await AsyncStorage.getItem("currentUser");
-    if (current_user !== null && current_user !== ""){
-        let userdata = await AsyncStorage.getItem(current_user);
-        if (userdata !== null && userdata !== "") {
-        var age = JSON.parse(userdata).age;
-        return age;
-        }
-    }
-  };
+
   async function set_user_data() {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
       let userdata = await AsyncStorage.getItem(current_user);
       if (userdata !== null && userdata !== "" && input_weight !== null) {
-        setCurrWeight(input_weight);
         var parsedList = JSON.parse(userdata).entries;
-        var weight = input_weight == null ? JSON.parse(userdata).weight : input_weight;
+        var weight = input_weight;
         var height = JSON.parse(userdata).height;
         var goal = JSON.parse(userdata).goal;
         var gender = JSON.parse(userdata).gender;
         var age = JSON.parse(userdata).age;
         let day = new Date();
         parsedList.push({weight: input_weight, date : day.getDate(), month : day.getMonth()})
+        setData(parsedList);
         AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, weight: weight, height: height, goal: goal, gender: gender, age: age}))
       } 
     }
@@ -160,62 +100,59 @@ export default function TabThreeScreen() {
     }    
   };
 
-  const get_calorie_goal = async () => {
-    let current_user = await AsyncStorage.getItem("currentUser");
-    if (current_user !== null && current_user !== ""){
-      let userdata = await AsyncStorage.getItem(current_user);
-      let fitnessdata = await AsyncStorage.getItem(current_user + "Fitness");
-      if (userdata !== null && fitnessdata !== null) {
-        var gender = JSON.parse(userdata).gender;
-        var weight = JSON.parse(userdata).weight;
-        var height = JSON.parse(userdata).height;
-        var age = JSON.parse(userdata).age;
-        var goal = JSON.parse(userdata).goal;
-        var fitness = JSON.parse(fitnessdata).fitnessLevel;
-        var calorie = 0;
-        if (gender === "Male") {
-          calorie = fitness * (10 * weight / 2.205 + 6.25 * height - 5 * age + 5);
-        }else if (gender === "Female") {
-          calorie = fitness * (10 * weight / 2.205 + 6.25 *height - 5 * age - 161);
-        }
-        if (goal === "lose weight") {
-          calorie -= 500;
-        }else if (goal === "gain weight") {
-          calorie += 500;
-        }
-        AsyncStorage.setItem(current_user + "Calorie", JSON.stringify(calorie));
-        return calorie;
-      }
-    }    
-  };
-  const get_calorie_burned_goal = async () => {
-    let current_user = await AsyncStorage.getItem("currentUser");
-    if (current_user !== null && current_user !== ""){
-      let userdata = await AsyncStorage.getItem(current_user + "Fitness");
-      if (userdata !== null) {
-        var fitness = JSON.parse(userdata).fitnessLevel;
-        return fitness - 1.2;
-      }
-    }    
-  };
-
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.name}>Progress</Text>
-      <TextInput 
-        placeholder= 'input your weight'
-        keyboardType='numeric'
-        returnKeyType='done'
-        style={styles.input} 
-        onChangeText = {(text) => setWeight(text)} />
-      <TouchableOpacity style={styles.button} onPress={() => set_user_data()}>
-        <Text style={{ color: "white"}}>+</Text>
+    <SafeAreaView style={styles.container}>
+      <TouchableOpacity style={styles.button} onPress={() => {updateInfo(); setModalVisible(true)}}>
+        <Text style={{ color: "white"}}>Add Weight</Text>
       </TouchableOpacity>
+      <SafeAreaView style={styles.centeredView}>
+        <Modal 
+          animationType="slide"
+          visible= {isModalVisible}
+          onRequestClose={() => {
+            setModalVisible(false);
+          }}
+        >
+        <SafeAreaView style={styles.insideModal}>
+            <View style = {styles.infobox}>
+              <Button title="cancel" onPress={() => setModalVisible(false)} />
+              <View style = {{marginLeft: "auto"}}>
+                <Button 
+                  title="submit" 
+                  onPress={() => {set_user_data();setModalVisible(false)}} />
+              </View>
+            </View>
+            <TouchableOpacity style={styles.profileInfo}>
+            <View style={styles.infobox}>
+                <Text style={{ color: "black"}}>Weight</Text>
+                <View style={{flex: 1}}>
+                  <TextInput 
+                    textAlign = 'right'
+                    placeholder= {input_weight + " lbs"}
+                    keyboardType='numeric'
+                    returnKeyType='done'
+                    onChangeText={(item) => setWeight(item)}
+                  />
+                </View>
+            </View>
+          </TouchableOpacity>
 
-      <Text style={styles.title}>Entries</Text>
+          {/* <DatePicker
+            title="Date"
+            onChange={(date) => console.log(date)}
+            mode = "spinner"
+          /> */}
+
+          {/* <ExerciseRecommendation></ExerciseRecommendation> */}
+          </SafeAreaView>
+        </Modal>
+      </SafeAreaView>
+      
+      {/* data.slice(Math.max(data.length - 3, 0)) */}
+
+      <Text style={styles.entries}>Entries</Text>
       <FlatList
-          data={data.slice(0, 4)}
+          data={data.slice(Math.max(data.length - 4, 0))}
           renderItem={( { item } ) => (
             <View style={styles.entries}>
               <Text>{item.weight + " lbs"}</Text>
@@ -223,26 +160,45 @@ export default function TabThreeScreen() {
             </View>
           )
           }
+          // keyExtractor={(item) => item}
       />
      
-      <Text>calorie goal: {Math.round(calorieGoal)} </Text>
-      <Text>calorie burned goal: {Math.round(calorieGoal * calorieBurnGoal)}</Text>
+      
 
-    </View>
+    </SafeAreaView>
   );
   // }
   
 }
 
 const styles = StyleSheet.create({
+  infobox: {
+    flexDirection: "row",
+  },
+  profileInfo: {
+    // marginTop: 16,
+    // marginHorizontal: 32,
+    alignSelf: "stretch",
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderRadius: 1,
+    backgroundColor: "white",
+    // borderColor: "gray"
+  },
+  insideModal: {
+    flex: 1,
+    marginTop: 50
+  },
+  centeredView: {
+    flex: 1,
+    // marginTop: 22
+  },
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    // alignItems: 'center',
   },
   entries: {
-    flex: 1,
-    // alignSelf: "stretch",
     paddingVertical: 12,
     paddingHorizontal: 14,
     borderWidth: 1,
@@ -258,7 +214,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     backgroundColor: "white",
     borderColor: "gray"
-
   },
   name: {
     fontSize: 24,
@@ -272,17 +227,15 @@ const styles = StyleSheet.create({
     margin: 32,
     height: 48,
     borderRadius: 6,
+    justifyContent: "center",
     paddingHorizontal: 16,
     fontSize: 25,
   },
   button: {
     backgroundColor: "#575DD9",
-    alignItems: "center",
-    justifyContent: "center",
-    alignSelf: "stretch",
+    marginLeft: "auto",
     paddingVertical: 12,
-    paddingHorizontal: 32,
-    marginHorizontal: 32,
+    paddingHorizontal: 14,
     borderRadius: 6,
   },
 });

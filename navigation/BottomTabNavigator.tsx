@@ -144,7 +144,8 @@ export default function AppNavigator() {
           component={BottomTabNavigator}
           options={{ 
             title: "",
-            headerLeft: () => null }}/>
+            headerLeft: () => null }}
+            />
         <EntireApp.Screen 
           name = "SurveyForm"
           component={SurveyScreen}
@@ -310,8 +311,8 @@ function TabThreeNavigator() {
       <TabThreeStack.Screen
         name="Progress"
         component={TabThreeScreen}
-        options={{ header: () => null }}
-      />
+        options={{ headerLeft: () => null }}
+      /> 
     </TabThreeStack.Navigator>
   );
 }
@@ -325,12 +326,12 @@ function ProfileNavigator() {
       <ProfileStack.Screen 
         name="Profile"
         component={ProfileScreen}
-        options={{ header: () => null }}
+        options={{ headerLeft: () => null }}
       />
       <ProfileStack.Screen 
         name="ProfileEdit"
         component={ProfileEditScreen}
-        options={{ header: () => null }}
+        options={{ title: "Profile", headerLeft: () => null }}
       />
     </ProfileStack.Navigator>
   );
