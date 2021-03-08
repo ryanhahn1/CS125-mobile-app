@@ -161,7 +161,7 @@ function BottomTabNavigator() {
   const colorScheme = useColorScheme();
   return (
     <BottomTab.Navigator
-      initialRouteName="Diet"
+      initialRouteName="Profile"
       tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}>
       <BottomTab.Screen
         name="Diet"

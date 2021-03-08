@@ -4,8 +4,6 @@ import {StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView} from 
 import { NavigationContainer, useIsFocused, useNavigation } from "@react-navigation/native"
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import DropDownPicker from 'react-native-dropdown-picker';
-
 
 import {
   DateRangePicker,

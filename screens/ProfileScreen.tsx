@@ -48,6 +48,16 @@ export default function ProfileScreen() {
     updateInfo();
   }, [isFocused]);
 
+
+  const logout = async () => {
+    try {
+      await AsyncStorage.removeItem("currentUser");
+      navigation.goBack();
+    } catch (err) {
+      alert(err);
+    }
+  };
+  
   async function get_user_name () {
     let current_user = await AsyncStorage.getItem("currentUser");
     return current_user;
@@ -173,6 +183,10 @@ export default function ProfileScreen() {
         </View>
       </TouchableOpacity>  
       
+      <TouchableOpacity style={styles.button} onPress={() => logout()}>
+        <Text style={{ color: "white"}}>Log out</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ProfileEdit")}>
         <Text style={{ color: "white"}}>Edit profile!</Text>
       </TouchableOpacity>

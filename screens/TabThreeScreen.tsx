@@ -102,7 +102,7 @@ export default function TabThreeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={() => {updateInfo(); setModalVisible(true)}}>
+      <TouchableOpacity style={styles.button} onPress={() => {setModalVisible(true)}}>
         <Text style={{ color: "white"}}>Add Weight</Text>
       </TouchableOpacity>
       <SafeAreaView style={styles.centeredView}>
