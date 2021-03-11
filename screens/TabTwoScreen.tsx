@@ -12,11 +12,13 @@ import FitHealthStat from "../components/HealthStatus";
 import FitExerciseStat from "../components/ExerciseStatus";
 import FitChart from "../components/FitChart";
 import FitImage from "../components/FitImage";
+import StackedBar from "../components/StackedBar";
 
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 
 
 import { Pedometer } from 'expo-sensors';
+// import { StackedBarChart } from 'react-native-chart-kit';
 
 const { width } = Dimensions.get("screen");
 
@@ -33,6 +35,10 @@ export default function TabTwoScreen (){
   var [weightList, setWeightList] = useState<any | null>([]);
   var [input_steps, setSteps] = useState<any | null>(null);
   //var [pastStepList, setPastStepList] = useState<any | null>([]);
+  var [calorieBurnGoal, setCalorieBurnGoal] = useState<any | null>(null);
+  var [calorieGoal, setCalorieGoal] = useState<any | null>(null);
+
+  // var [temp_char, SetTemp_char] = useState<any | null>([]);
 
   const [time, setTime] = useState(0);
   var count = 0;
@@ -58,7 +64,18 @@ export default function TabTwoScreen (){
   
   useEffect(() => {
     const updateInfo = async () => {
-      //save_user_steps();  
+      //save_user_steps();
+      
+      get_calorie_goal()
+      .then(d => {
+        setCalorieGoal(d);
+      })
+
+      get_calorie_burned_goal()
+        .then(d => {
+          setCalorieBurnGoal(d);
+        })
+      
       /*
       
       get_user_steps()
@@ -182,18 +199,66 @@ export default function TabTwoScreen (){
       };
       */
 
+     const get_calorie_goal = async () => {
+      let current_user = await AsyncStorage.getItem("currentUser");
+      if (current_user !== null && current_user !== ""){
+        let userdata = await AsyncStorage.getItem(current_user);
+        let fitnessdata = await AsyncStorage.getItem(current_user + "Fitness");
+        if (userdata !== null && fitnessdata !== null) {
+          var gender = JSON.parse(userdata).gender;
+          var weight = JSON.parse(userdata).weight;
+          var height = JSON.parse(userdata).height;
+          var age = JSON.parse(userdata).age;
+          var goal = JSON.parse(userdata).goal;
+          var fitness = JSON.parse(fitnessdata).fitnessLevel;
+          var calorie = 0;
+          if (gender === "Male") {
+            calorie = fitness * (10 * weight / 2.205 + 6.25 * height - 5 * age + 5);
+          }else if (gender === "Female") {
+            calorie = fitness * (10 * weight / 2.205 + 6.25 *height - 5 * age - 161);
+          }
+          if (goal === "lose weight") {
+            calorie -= 500;
+          }else if (goal === "gain weight") {
+            calorie += 500;
+          }
+          AsyncStorage.setItem(current_user + "Calorie", JSON.stringify(calorie));
+          return calorie;
+        }
+      }    
+    };
+
+
+     const get_calorie_burned_goal = async () => {
+      let current_user = await AsyncStorage.getItem("currentUser");
+      if (current_user !== null && current_user !== ""){
+          let userdata = await AsyncStorage.getItem(current_user + "Fitness");
+          if (userdata !== null) {
+          var fitness = JSON.parse(userdata).fitnessLevel;
+          return fitness - 1.2;
+          }
+      }    
+      };
+
+
+      
+  // var calorieBurnWeek = [1, 1, 1, 1, 1, 1, 1];
+  var temp_cal = (Math.round(calorieGoal * calorieBurnGoal) * 1000 / 40).toFixed(2) as unknown as number ;
   
   /*
-  get_user_steps()
-  .then(d => {
-      //setSteps(d);
-      setPastStepList(d);
-  })
+  var temp_cal = Math.round(calorieGoal * calorieBurnGoal);
+  
+  calorieBurnWeek[d.getDay()] = (currentStep/(temp_cal * 1000/40) * 100).toFixed(2) as any;
+  if(n == "Sun"){
+    calorieBurnWeek[6] = (pastStep/(temp_cal * 1000/40)*100).toFixed(2) as any;
+  }
+  else{
+    calorieBurnWeek[d.getDay() - 1] = (pastStep/(temp_cal * 1000/40)*100).toFixed(2) as any;
+  }
   */
   
-  
 
-
+  //var barChart = [daySteps[d.getDay()],temp_cal];
   
   return (
     <View style={styles.container}>
@@ -201,18 +266,16 @@ export default function TabTwoScreen (){
       <Text style={styles.name}>Exercise </Text>
       <Text>Steps taken in the last 24 hours: {pastStep}</Text>
       <Text>Steps: {currentStep}</Text> 
-      <Text>Remaining Steps: {10000 - currentStep}</Text> 
-      
-
+      <Text>Remaining Steps: {temp_cal - currentStep}</Text> 
       <Text>Total calorie burned: {currentStep * 40/1000}</Text>
       <Text>Total miles: {currentStep * 1/2000}</Text> 
       
       <Text></Text>
 
-      <ScrollView style={{ backgroundColor: "gray" }}>
+      <ScrollView style={{ backgroundColor: "#ffffff" }}>
       <View>
         <FitChart
-          title={"Take 10,000 steps a day for a week"}
+          title={"Daily Steps"}
           data={
             {
               labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
@@ -223,9 +286,29 @@ export default function TabTwoScreen (){
               ]
             }
         }
-          baseline={10000}
+        propsForBackgroundLines={10000}
         />
       </View>
+
+
+
+    <View>
+    <StackedBar
+        title = {"Steps Goals"}
+        data = {
+          {
+          labels: ["","","Daily Goals"],
+          legend: ["Taken", "Goal"],
+          data: [[],[], [2345, 6598]],
+          barColors: ["#dfe4ea", "#ced6e0"]
+          }
+        }
+  
+        />
+      </View>
+
+
+
     </ScrollView>
     
     </View>
@@ -284,24 +367,32 @@ const sleepData = {
   ]
 };
 
-const stepsData = {
+
+const data_temp = {
   labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-  datasets: [
-    {
-      data: [10000, 9000, 2000, 3000, 8000, 11000, 10500],
-      baseline: 10000
-    }
-  ]
+  legend: ["Taken", "Goal"],
+  data: [[60, 60], [30, 30]],
+  barColors: ["#dfe4ea", "#ced6e0"]
 };
 
-const weightData = {
-  labels: ["Jan", "Feb", "Mar", "April", "May", "Jun"],
-  
-  datasets: [
-    {
-      data: [177, 173, 170, 166, 170, 160],
-      baseline: 150
-    }
-  ]
-}
 
+/*
+
+      <View>
+        <FitChart
+          title={"Percents of Steps Goal"}
+          data={
+            {
+              labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+              datasets: [
+                {
+                  data: calorieBurnWeek
+                }
+              ]
+            }
+          }
+          propsForBackgroundLines={100}
+        />
+      </View>
+
+      */

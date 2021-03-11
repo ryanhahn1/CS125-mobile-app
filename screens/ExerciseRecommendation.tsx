@@ -54,6 +54,7 @@ export default function ExerciseRecommendation() {
           }
         }    
       };
+      
     const get_calorie_burned_goal = async () => {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){

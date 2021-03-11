@@ -1,28 +1,27 @@
 import React from "react";
 import { View, Dimensions, Text } from "react-native";
-import { BarChart } from "react-native-chart-kit";
+import { StackedBarChart } from "react-native-chart-kit";
 
-interface FitDataSets {
-  data: number[];
-}
 
-interface FitChartData {
+interface StackedBarData {
   labels: string[];
-  datasets: FitDataSets[];
+  legend: string[];
+  data: number[][];
+  barColors: string[];
 }
 
-interface FitChartProps {
-  data: FitChartData;
+interface StackedBarChartProps {
+  data: StackedBarData;
   title: string;
   description?: string;
-  propsForBackgroundLines: number;
+  
 }
 
-const FitChart = (props: FitChartProps) => {
-  const { data, title, description, propsForBackgroundLines } = props;
+const StackedBar = (props: StackedBarChartProps) => {
+  const { data, title, description } = props;
   
   return (
-    <View style={{ flex: 1}}>
+    <View style={{ flex: 1, marginBottom: 30 }}>
       <View style={{ paddingLeft: 20 }}>
         <Text
           style={{
@@ -40,17 +39,22 @@ const FitChart = (props: FitChartProps) => {
           </Text>
         )}
       </View>
+      
       <View>
-        <BarChart
+        <StackedBarChart
           style={{
             marginVertical: 8,
             borderRadius: 16,
           }}
-          yAxisSuffix=""
-          data={data}
+          // yAxisSuffix=""
+          data = {data}
           width={Dimensions.get("window").width}
-          height={220}
-          yAxisLabel=""
+          height={250}
+          hideLegend={false}
+          //xLabelsOffset = {100}
+          yLabelsOffset = {-30}
+          
+          // yAxisLabel=""
           chartConfig={{
             backgroundColor: "#ffffff",
             backgroundGradientFrom: "#ffffff",
@@ -66,19 +70,13 @@ const FitChart = (props: FitChartProps) => {
               paddingRight: 64,
             },
             barPercentage: 0.5,
-            decimalPlaces: 0,
-            propsForBackgroundLines: {
-              propsForBackgroundLines : 10000
-              
-            }
+            decimalPlaces: 2,
           }}
-          showValuesOnTopOfBars = {true}
-          showBarTops={false}
-          fromZero
+          
         />
       </View>
     </View>
   );
 };
 
-export default FitChart;
+export default StackedBar;
