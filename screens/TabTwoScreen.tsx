@@ -349,7 +349,7 @@ export default function TabTwoScreen (){
           {
           labels: ["","","Daily Goals"],
           legend: ["Taken", "Goal"],
-          data: [[],[], [2345, 6598]],
+          data: [[],[], [currentStep==0? 1:currentStep, temp_cal]],
           barColors: ["#dfe4ea", "#ced6e0"]
           }
         }
