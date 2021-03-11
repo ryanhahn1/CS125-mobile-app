@@ -60,7 +60,9 @@ export default function SurveyScreen() {
     if (current_user !== null && current_user !== ""){
       let userdata = await AsyncStorage.getItem(current_user);
       if (userdata !== null && userdata !== "") {
+        let day = new Date();
         var parsedList = JSON.parse(userdata).entries;
+        parsedList.push({weight: input_weight, date : day.getDate(), month : day.getMonth(), key : Date.now()})
         AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, weight: input_weight, height: input_height, goal: input_goal, gender: input_gender, age: input_age}))
       }
     }

@@ -66,6 +66,15 @@ export default function TabThreeScreen() {
   //   })
   // }
 
+
+  const sampleData = [
+    {weight: "150", date: 10, month: 1, key: 1},
+    {weight: "149", date: 17, month: 1, key: 1},
+    {weight: "148", date: 24, month: 1, key: 1},
+    {weight: "147", date: 2, month: 2, key: 2},
+    {weight: "146", date: 10, month: 2, key: 3},
+  ]
+
   const get_user_weight_list = async() =>{
     var temp = [0,0,0,0,0,0];
     var occurences = [0,0,0,0,0,0]
@@ -76,7 +85,7 @@ export default function TabThreeScreen() {
         let userdata = await AsyncStorage.getItem(current_user);
         if (userdata !== null && userdata !== "") {
         var temp_entries = JSON.parse(userdata).entries; // list
-        //var match = temp_entries[0].date.toString().split(" ");
+        // var temp_entries = sampleData;
         if (temp_entries.length !== 0) {
           for(i = 0; i < temp_entries.length; i++){
             temp[temp_entries[i].month] += parseInt(temp_entries[i].weight);
@@ -116,7 +125,7 @@ export default function TabThreeScreen() {
         var gender = JSON.parse(userdata).gender;
         var age = JSON.parse(userdata).age;
         let day = new Date();
-        parsedList.push({weight: input_weight, date : day.getDate(), month : day.getMonth()})
+        parsedList.push({weight: input_weight, date : day.getDate(), month : day.getMonth(), key : Date.now()})
         setData(parsedList);
         AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, weight: weight, height: height, goal: goal, gender: gender, age: age}))
       } 
@@ -124,7 +133,7 @@ export default function TabThreeScreen() {
   };
 
 
-  // const sampleData = [{weight: 120,}]
+  
 
   const load_user_data = async () => {
     let current_user = await AsyncStorage.getItem("currentUser");
@@ -135,6 +144,7 @@ export default function TabThreeScreen() {
         setData(parsed);
       }
     }    
+    // setData(sampleData);
   };
 
 
@@ -216,7 +226,7 @@ export default function TabThreeScreen() {
             </View>
           )
           }
-          // keyExtractor={(item) => item}
+          keyExtractor={(item) => item.key}
       />
      
       
