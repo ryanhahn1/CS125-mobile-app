@@ -311,7 +311,7 @@ function TabThreeNavigator() {
       <TabThreeStack.Screen
         name="Progress"
         component={TabThreeScreen}
-        options={{ headerLeft: () => null }}
+        options={{ header: () => null }}
       /> 
     </TabThreeStack.Navigator>
   );

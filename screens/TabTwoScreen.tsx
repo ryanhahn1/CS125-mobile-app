@@ -58,12 +58,7 @@ export default function TabTwoScreen (){
   
   useEffect(() => {
     const updateInfo = async () => {
-      //save_user_steps();
-      get_user_weight()
-      .then(d => {
-        setWeightList(d);
-      })
-      
+      //save_user_steps();  
       /*
       
       get_user_steps()
@@ -165,52 +160,6 @@ export default function TabTwoScreen (){
   }
   */
 
-
-  var temp = [0,0,0,0,0,0];
-  var countTime = 0;
-  var countSum = 0;
-  var i, j = 0;
-  // get user weight
-  const get_user_weight = async() =>{
-  // async function get_user_weight() {
-    let current_user = await AsyncStorage.getItem("currentUser");
-    if (current_user !== null && current_user !== ""){
-        let userdata = await AsyncStorage.getItem(current_user);
-        if (userdata !== null && userdata !== "") {
-        // var weight = JSON.parse(userdata).weight;
-        var temp_entries = JSON.parse(userdata).entries; // list
-        //var match = temp_entries[0].date.toString().split(" ");
-        var lastMon = temp_entries[0].month; 
-        var match;
-        for(i = 0; i < temp_entries.length; i++){
-
-          // temp.push(temp_entries[i].weight);
-          //match = temp_entries[i].date.toString().split(" ");
-          match = temp_entries[i].month;
-
-          if(match == lastMon && i == temp_entries.length - 1){
-              temp[5] = countSum/countTime;
-          }
-          else if(match == lastMon){
-            countTime = countTime + 1;
-            countSum = countSum + parseInt(temp_entries[i].weight);
-          }
-          else{
-            temp[j] = countSum/countTime;
-            countSum = 0;
-            countTime = 0;
-            lastMon = match;
-            if(j < 6){
-              j++;
-            }
-          }
-        }
-      
-        return temp;
-        } 
-    }
-  };
-
  /*
   // get the steps
   const get_user_steps = async() =>{
@@ -233,11 +182,6 @@ export default function TabTwoScreen (){
       };
       */
 
-  
-  get_user_weight()
-  .then(d => {
-    setWeightList(d);
-  })
   
   /*
   get_user_steps()
@@ -265,7 +209,7 @@ export default function TabTwoScreen (){
       
       <Text></Text>
 
-      <ScrollView style={{ backgroundColor: "#1f2026" }}>
+      <ScrollView style={{ backgroundColor: "gray" }}>
       <View>
         <FitChart
           title={"Take 10,000 steps a day for a week"}
@@ -282,26 +226,6 @@ export default function TabTwoScreen (){
           baseline={10000}
         />
       </View>
-
-
-      <View>
-        <FitChart
-          title={"Weight"}
-          data={
-            {
-              labels: ["Oct", "Nov", "Dec", "Jan", "Feb", "Mar"],
-              
-              datasets: [
-                {
-                  data: weightList
-                }
-              ]
-            }
-          }
-          baseline={100}
-        />
-      </View>
-
     </ScrollView>
     
     </View>

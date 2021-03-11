@@ -22,11 +22,11 @@ const FitChart = (props: FitChartProps) => {
   const { data, title, description, baseline } = props;
   
   return (
-    <View style={{ flex: 1, marginBottom: 30 }}>
+    <View style={{ flex: 1}}>
       <View style={{ paddingLeft: 20 }}>
         <Text
           style={{
-            color: "#e6e7ec",
+            color: "black",
             fontSize: 20,
             fontWeight: "500",
             marginBottom: 5,
@@ -52,9 +52,9 @@ const FitChart = (props: FitChartProps) => {
           height={220}
           yAxisLabel=""
           chartConfig={{
-            backgroundColor: "#1f2026",
-            backgroundGradientFrom: "#1f2026",
-            backgroundGradientTo: "#1f2026",
+            backgroundColor: "#ffffff",
+            backgroundGradientFrom: "#ffffff",
+            backgroundGradientTo: "#ffffff",
             fillShadowGradient: "#7262f8",
             fillShadowGradientOpacity: 1,
             color: (opacity = 1) => `rgba(${154}, ${155}, ${161}, ${opacity})`,

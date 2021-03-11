@@ -3,9 +3,10 @@ import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert, Modal
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import ExerciseRecommendation from '../screens/ExerciseRecommendation';
+import FitChart from "../components/FitChart";
+// import ExerciseRecommendation from '../screens/ExerciseRecommendation';
 // import Modal from 'react-native-modal';
 import {
   DateRangePicker,
@@ -21,6 +22,7 @@ export default function TabThreeScreen() {
   const [isModalVisible, setModalVisible] = useState(false);
   const [data, setData] = useState([] as any[]);
   var [input_weight, setWeight] = useState<any | null>(null);
+  var [weightList, setWeightList] = useState<any | null>([]);
   const isFocused = useIsFocused(); 
 
   const updateInfo = async () => {
@@ -28,6 +30,10 @@ export default function TabThreeScreen() {
     get_user_weight()
     .then(d => {
         setWeight(d);
+    })
+    get_user_weight_list()
+    .then(d => {
+        setWeightList(d);
     })
     load_user_data();
   };
@@ -59,6 +65,33 @@ export default function TabThreeScreen() {
   //       console.log(response);
   //   })
   // }
+
+  const get_user_weight_list = async() =>{
+    var temp = [0,0,0,0,0,0];
+    var occurences = [0,0,0,0,0,0]
+    var i;
+
+    let current_user = await AsyncStorage.getItem("currentUser");
+    if (current_user !== null && current_user !== ""){
+        let userdata = await AsyncStorage.getItem(current_user);
+        if (userdata !== null && userdata !== "") {
+        var temp_entries = JSON.parse(userdata).entries; // list
+        //var match = temp_entries[0].date.toString().split(" ");
+        if (temp_entries.length !== 0) {
+          for(i = 0; i < temp_entries.length; i++){
+            temp[temp_entries[i].month] += parseInt(temp_entries[i].weight);
+            occurences[temp_entries[i].month] += 1;
+          }
+          for(i = 0; i < temp.length; ++i) {
+            if (occurences[i] !== 0) {
+              temp[i] /= occurences[i];
+            }
+          }
+        }  
+        return temp;
+        } 
+    }
+  };
     
   async function get_user_weight() {
     let current_user = await AsyncStorage.getItem("currentUser");
@@ -89,6 +122,10 @@ export default function TabThreeScreen() {
       } 
     }
   };
+
+
+  // const sampleData = [{weight: 120,}]
+
   const load_user_data = async () => {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
@@ -100,11 +137,33 @@ export default function TabThreeScreen() {
     }    
   };
 
+
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={() => {setModalVisible(true)}}>
-        <Text style={{ color: "white"}}>Add Weight</Text>
-      </TouchableOpacity>
+      <View style={styles.infobox}>
+        <Text style={styles.title}>Progress</Text>
+        <TouchableOpacity style={styles.button} onPress={() => {setModalVisible(true)}}>
+          <Text style={{ color: "white"}}>Add Weight</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={{height: 242}} >
+          <FitChart
+            title={""}
+            data={
+              {
+                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+                
+                datasets: [
+                  {
+                    data: weightList
+                  }
+                ]
+              }
+            }
+            baseline={100}
+          />
+      </View>
+
       <SafeAreaView style={styles.centeredView}>
         <Modal 
           animationType="slide"
@@ -122,6 +181,7 @@ export default function TabThreeScreen() {
                   onPress={() => {set_user_data();setModalVisible(false)}} />
               </View>
             </View>
+
             <TouchableOpacity style={styles.profileInfo}>
             <View style={styles.infobox}>
                 <Text style={{ color: "black"}}>Weight</Text>
@@ -136,27 +196,23 @@ export default function TabThreeScreen() {
                 </View>
             </View>
           </TouchableOpacity>
-
-          {/* <DatePicker
-            title="Date"
-            onChange={(date) => console.log(date)}
-            mode = "spinner"
-          /> */}
-
-          {/* <ExerciseRecommendation></ExerciseRecommendation> */}
           </SafeAreaView>
         </Modal>
       </SafeAreaView>
       
       {/* data.slice(Math.max(data.length - 3, 0)) */}
 
-      <Text style={styles.entries}>Entries</Text>
+      <Text style={[styles.title, {paddingBottom: 30}]}>Entries</Text>
       <FlatList
-          data={data.slice(Math.max(data.length - 4, 0))}
+          ListFooterComponent={
+          <TouchableOpacity style={styles.entries}></TouchableOpacity> }
+          data={data.slice(Math.max(data.length - 4, 0)).reverse()}
           renderItem={( { item } ) => (
-            <View style={styles.entries}>
+            <View style={[styles.entries, {flexDirection: "row"}]}>
               <Text>{item.weight + " lbs"}</Text>
-              <Text>{item.month + "/" + item.date}</Text>
+              <View style={{marginLeft: "auto"}}>
+                <Text >{item.month + 1 + "/" + item.date}</Text>
+              </View>
             </View>
           )
           }
@@ -173,6 +229,8 @@ export default function TabThreeScreen() {
 
 const styles = StyleSheet.create({
   infobox: {
+    marginTop: 0,
+    padding: 0,
     flexDirection: "row",
   },
   profileInfo: {
@@ -199,16 +257,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   entries: {
+    alignSelf: "stretch",
+    borderColor: "#575DD9",
+    paddingTop: 10,
     paddingVertical: 12,
     paddingHorizontal: 14,
-    borderWidth: 1,
+    borderTopWidth: 1,
     borderRadius: 1,
     backgroundColor: "white",
-    borderColor: "gray"
   },
   title: {
     flex: 1,
+    marginTop: 0,
     // alignSelf: "stretch",
+    fontSize: 20,
     paddingVertical: 12,
     paddingHorizontal: 14,
     borderTopWidth: 1,
@@ -232,8 +294,10 @@ const styles = StyleSheet.create({
     fontSize: 25,
   },
   button: {
+    marginTop: 0,
     backgroundColor: "#575DD9",
     marginLeft: "auto",
+    alignSelf: "center",
     paddingVertical: 12,
     paddingHorizontal: 14,
     borderRadius: 6,
