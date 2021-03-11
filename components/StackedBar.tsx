@@ -63,7 +63,7 @@ const StackedBar = (props: StackedBarChartProps) => {
             fillShadowGradientOpacity: 1,
             color: (opacity = 1) => `rgba(${154}, ${155}, ${161}, ${opacity})`,
             labelColor: (opacity = 1) =>
-              `rgba(${154}, ${155}, ${161}, ${opacity})`,
+              `rgba(${70}, ${71}, ${74}, ${opacity})`,
             style: {
               borderRadius: 16,
               right: 0,

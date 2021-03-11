@@ -4,18 +4,13 @@ import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, FlatList, Al
 import EditScreenInfo from '../components/EditScreenInfo';
 //import { Text, View } from '../components/Themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import GoogleFit, { Scopes } from 'react-native-google-fit'
-
-
 import FitHealthStat from "../components/HealthStatus";
 import FitExerciseStat from "../components/ExerciseStatus";
 import FitChart from "../components/FitChart";
 import FitImage from "../components/FitImage";
 import StackedBar from "../components/StackedBar";
-
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-
 
 import { Pedometer } from 'expo-sensors';
 // import { StackedBarChart } from 'react-native-chart-kit';
@@ -88,7 +83,6 @@ export default function TabTwoScreen (){
     updateInfo();
   }, [isFocused]);
   
-
   /*
   useEffect(() => {
     return() => {
@@ -244,7 +238,7 @@ export default function TabTwoScreen (){
       
   // var calorieBurnWeek = [1, 1, 1, 1, 1, 1, 1];
   var temp_cal = (Math.round(calorieGoal * calorieBurnGoal) * 1000 / 40).toFixed(2) as unknown as number ;
-  
+
   /*
   var temp_cal = Math.round(calorieGoal * calorieBurnGoal);
   
@@ -264,11 +258,10 @@ export default function TabTwoScreen (){
     <View style={styles.container}>
 
       <Text style={styles.name}>Exercise </Text>
-      <Text>Steps taken in the last 24 hours: {pastStep}</Text>
-      <Text>Steps: {currentStep}</Text> 
-      <Text>Remaining Steps: {temp_cal - currentStep}</Text> 
-      <Text>Total calorie burned: {currentStep * 40/1000}</Text>
-      <Text>Total miles: {currentStep * 1/2000}</Text> 
+      <Text></Text>
+      <Text>Steps: {currentStep == 0? 1:currentStep}</Text> 
+      <Text>Recommended calorie burned: {Math.round(calorieGoal * calorieBurnGoal)}</Text>
+      <Text>Recommended steps: {Math.round(calorieGoal * calorieBurnGoal) * 1000/40}</Text> 
       
       <Text></Text>
 
@@ -281,7 +274,7 @@ export default function TabTwoScreen (){
               labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
               datasets: [
                 {
-                  data: daySteps
+                  data: [4581, 9874, 1243, 6150, 9873, 3658, 4892]
                 }
               ]
             }
@@ -299,8 +292,8 @@ export default function TabTwoScreen (){
           {
           labels: ["","","Daily Goals"],
           legend: ["Taken", "Goal"],
-          data: [[],[], [2345, 6598]],
-          barColors: ["#dfe4ea", "#ced6e0"]
+          data: [[],[], [parseInt(currentStep == 0? 1:currentStep),parseInt(temp_cal)]],
+          barColors: ["#bab3f5", "#968cf5"]
           }
         }
   
