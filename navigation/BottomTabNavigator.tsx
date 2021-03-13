@@ -11,10 +11,8 @@ import useColorScheme from '../hooks/useColorScheme';
 import FoodRecommendation from '../screens/FoodRecommendationScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
 import TabThreeScreen from '../screens/TabThreeScreen';
-import FoodSearchScreen from '../screens/FoodSearchScreen';
 import ProfileEditScreen from '../screens/ProfileEditScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import RecommendationScreen from '../screens/Recommendation';
 import { BottomTabParamList, TabOneParamList, TabTwoParamList, TabThreeParamList, AppParamList, ProfileParamList} from '../types';
 
 import SurveyScreen from '../screens/SurveyScreen';
@@ -258,11 +256,6 @@ function TabOneNavigator() {
       <TabOneStack.Screen 
         name="Login" 
         component={Login} 
-        options={{ header: () => null }}
-      />
-      <TabOneStack.Screen 
-        name="FoodSearch" 
-        component={FoodSearchScreen}
         options={{ header: () => null }}
       />
     </TabOneStack.Navigator>
