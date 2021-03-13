@@ -51,6 +51,7 @@ export default function ProfileEditScreen() {
     "Athlete exercise 6-7 times a week" : 1.725,
   };
 
+  // update all information on page load
   useEffect(() => {
     const updateInfo = async () => {
       get_user_name()
@@ -81,11 +82,13 @@ export default function ProfileEditScreen() {
     updateInfo();
   }, [isFocused]);
 
+  // returns the username that is logged in
   async function get_user_name () {
     let current_user = await AsyncStorage.getItem("currentUser");
     return current_user;
   };
 
+  // retrieves age of current user from Async profile storage
   async function get_user_age() {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
@@ -97,47 +100,53 @@ export default function ProfileEditScreen() {
     }
   };
 
+  // retrieves height of current user from Async profile storage
   async function get_user_height() {
-      let current_user = await AsyncStorage.getItem("currentUser");
-      if (current_user !== null && current_user !== ""){
-          let userdata = await AsyncStorage.getItem(current_user);
-          if (userdata !== null && userdata !== "") {
-          var height = JSON.parse(userdata).height;
-          return height;
-          }
+    let current_user = await AsyncStorage.getItem("currentUser");
+    if (current_user !== null && current_user !== ""){
+      let userdata = await AsyncStorage.getItem(current_user);
+      if (userdata !== null && userdata !== "") {
+        var height = JSON.parse(userdata).height;
+        return height;
       }
-    };
-    async function get_user_weight() {
-      let current_user = await AsyncStorage.getItem("currentUser");
-      if (current_user !== null && current_user !== ""){
-          let userdata = await AsyncStorage.getItem(current_user);
-          if (userdata !== null && userdata !== "") {
-          var weight = JSON.parse(userdata).weight;
-          return weight;
-          }
-      }
-    };
-    async function get_user_goal() {
-      let current_user = await AsyncStorage.getItem("currentUser");
-      if (current_user !== null && current_user !== ""){
-          let userdata = await AsyncStorage.getItem(current_user);
-          if (userdata !== null && userdata !== "") {
-          var goal = JSON.parse(userdata).goal;
-          return goal;
-          }
-      }
-    };
-    async function get_user_gender() {
-      let current_user = await AsyncStorage.getItem("currentUser");
-      if (current_user !== null && current_user !== ""){
-          let userdata = await AsyncStorage.getItem(current_user);
-          if (userdata !== null && userdata !== "") {
-          var gender = JSON.parse(userdata).gender;
-          return gender;
-          }
-      }
-    };
+    }
+  };
 
+  // retrieves weight of current user from Async profile storage
+  async function get_user_weight() {
+    let current_user = await AsyncStorage.getItem("currentUser");
+    if (current_user !== null && current_user !== ""){
+      let userdata = await AsyncStorage.getItem(current_user);
+      if (userdata !== null && userdata !== "") {
+        var weight = JSON.parse(userdata).weight;
+        return weight;
+      }
+    }
+  };
+  // retrieves goal of current user from Async profile storage
+  async function get_user_goal() {
+    let current_user = await AsyncStorage.getItem("currentUser");
+    if (current_user !== null && current_user !== ""){
+      let userdata = await AsyncStorage.getItem(current_user);
+      if (userdata !== null && userdata !== "") {
+        var goal = JSON.parse(userdata).goal;
+        return goal;
+      }
+    }
+  };
+  // retrieves gender of current user from Async profile storage
+  async function get_user_gender() {
+    let current_user = await AsyncStorage.getItem("currentUser");
+    if (current_user !== null && current_user !== ""){
+      let userdata = await AsyncStorage.getItem(current_user);
+      if (userdata !== null && userdata !== "") {
+        var gender = JSON.parse(userdata).gender;
+        return gender;
+      }
+    }
+  };
+
+  // updates Async profile storage for fitness goal based on user input
   const set_fitness_goal = async (fitness : number) => {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
@@ -148,7 +157,7 @@ export default function ProfileEditScreen() {
     }
   };
 
-
+  // updates Async profile storage for all other data fields based on user input
   async function save_user_info() {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){

@@ -1,53 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, FlatList, Alert, Dimensions, ScrollView} from 'react-native';
-
-import EditScreenInfo from '../components/EditScreenInfo';
-//import { Text, View } from '../components/Themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import GoogleFit, { Scopes } from 'react-native-google-fit'
-import FitHealthStat from "../components/HealthStatus";
-import FitExerciseStat from "../components/ExerciseStatus";
 import FitChart from "../components/FitChart";
-import FitImage from "../components/FitImage";
 import StackedBar from "../components/StackedBar";
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-
 import { Pedometer } from 'expo-sensors';
-// import { StackedBarChart } from 'react-native-chart-kit';
 
 const { width } = Dimensions.get("screen");
 
+// component for exercise tab
 export default function TabTwoScreen (){
-
   const isFocused = useIsFocused(); 
-
-  //const [name, setName] = useState<any | null>(null);
-  //const [data, setData] = useState([] as any[]);
   const [isPedometer, setIsPedometer] = useState('checking');
   const [pastStep, setPastStep] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
-
-  var [weightList, setWeightList] = useState<any | null>([]);
   var [input_steps, setSteps] = useState<any | null>(null);
-  //var [pastStepList, setPastStepList] = useState<any | null>([]);
   var [calorieBurnGoal, setCalorieBurnGoal] = useState<any | null>(null);
   var [calorieGoal, setCalorieGoal] = useState<any | null>(null);
-
-  // var [temp_char, SetTemp_char] = useState<any | null>([]);
-
   const [time, setTime] = useState(0);
   var count = 0;
 
   useEffect(() => {
     _subscribe();
     setSteps(currentStep);
-    // save_user_steps();
-   return() => {
-    // const _subscription = null;
-    // removeEventListener(_unsubscribe);
-    console.log("unsubscribe");
+    return() => {
+      console.log("unsubscribe");
     };
-  },[]
+    },[]
   );
 
   useEffect(() => {
@@ -55,43 +34,23 @@ export default function TabTwoScreen (){
       setTime(count + 1);
     }, 1000);
   });
-
   
+  // update goal and recommendation on tab load
   useEffect(() => {
-    const updateInfo = async () => {
-      //save_user_steps();
-      
+    const updateInfo = async () => {    
       get_calorie_goal()
       .then(d => {
         setCalorieGoal(d);
       })
-
       get_calorie_burned_goal()
         .then(d => {
           setCalorieBurnGoal(d);
-        })
-      
-      /*
-      
-      get_user_steps()
-      .then(d => {
-          //setSteps(d);
-          setPastStepList(d);
       })
-      */
   }
     updateInfo();
   }, [isFocused]);
-  
-  /*
-  useEffect(() => {
-    return() => {
-      console.log("unsubscribe");
-    };
-  },[seconds]
-  );
-  */
 
+  // subscribe to pedometer data collection
   const _subscribe = () => {
     const _subscription = Pedometer.watchStepCount(result => {
       setCurrentStep(result.steps);
@@ -115,18 +74,10 @@ export default function TabTwoScreen (){
       result => {
         setPastStep( result.steps );
       }
-      /*,
-      error => {
-        setPastStep(
-           error
-        );
-      }
-      */
     );
   };
-  //save_user_steps(); // call
 
-  // return monday thu
+  // initialize graph parameters
   var d = new Date();
   var weekday = new Array(7);
   weekday[0] = "Sun";
@@ -136,8 +87,7 @@ export default function TabTwoScreen (){
   weekday[4] = "Thu";
   weekday[5] = "Fri";
   weekday[6] = "Sat";
-  var n = weekday[d.getDay()]; // return the day of week, such as monday
-  //if(n == ){}
+  var n = weekday[d.getDay()];
   var daySteps = [0, 0, 0, 0, 0, 0, 0];
   daySteps[d.getDay()] = currentStep;
   if(n == "Sun"){
@@ -147,171 +97,89 @@ export default function TabTwoScreen (){
     daySteps[d.getDay() - 1] = pastStep;
   }
 
-
-  /*
-  // save steps
-  async function save_user_steps() {
-    //const save_user_steps = async() =>{
+  // compute daily calorie intake goal
+  const get_calorie_goal = async () => {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
       let userdata = await AsyncStorage.getItem(current_user);
-      if (userdata !== null && userdata !== "") {
-        var parsedList = JSON.parse(userdata).entries;
-        // var currentDate = new Date();
-        // var temp_currentDate = JSON.stringify(currentDate);
-        // var temp_steps = input_steps > await get_user_steps() ? JSON.parse(userdata).currentStep : input_steps;
-        //var temp_currentDate = JSON.parse(userdata).n;
-        var temp_steps = pastStep;
-        let day = new Date();
-        parsedList.push({steps: temp_steps, date : day.getDate(), month : day.getMonth()})
-        AsyncStorage.setItem(current_user, JSON.stringify({entries: parsedList, steps: temp_steps}))
+      let fitnessdata = await AsyncStorage.getItem(current_user + "Fitness");
+      if (userdata !== null && fitnessdata !== null) {
+        var gender = JSON.parse(userdata).gender;
+        var weight = JSON.parse(userdata).weight;
+        var height = JSON.parse(userdata).height;
+        var age = JSON.parse(userdata).age;
+        var goal = JSON.parse(userdata).goal;
+        var fitness = JSON.parse(fitnessdata).fitnessLevel;
+        var calorie = 0;
+        if (gender === "Male") {
+          calorie = fitness * (10 * weight / 2.205 + 6.25 * height - 5 * age + 5);
+        }else if (gender === "Female") {
+          calorie = fitness * (10 * weight / 2.205 + 6.25 *height - 5 * age - 161);
+        }
+        if (goal === "lose weight") {
+          calorie -= 500;
+        }else if (goal === "gain weight") {
+          calorie += 500;
+        }
+        AsyncStorage.setItem(current_user + "Calorie", JSON.stringify(calorie));
+        return calorie;
       }
-    }
-    //navigation.navigate("Progress")
-  }
-  */
+    }    
+  };
 
- /*
-  // get the steps
-  const get_user_steps = async() =>{
-      // async function get_user_weight() {
-      let current_user = await AsyncStorage.getItem("currentUser");
-      if (current_user !== null && current_user !== ""){
-          let userdata = await AsyncStorage.getItem(current_user);
-          if (userdata !== null && userdata !== "") {
-            // var weight = JSON.parse(userdata).weight;
-            var temp_entries_steps = JSON.parse(userdata).entries; // list
-            // daySteps[d.getDay()] = currentStep;
-            // daySteps[d.getDay() - 1] = input_steps;
-            // var z;
-              daySteps[d.getDay()] = currentStep;
-              daySteps[d.getDay() - 1] = pastStep;
-          
-            return daySteps;
-          } 
-        }
-      };
-      */
+  // retrieve fitness goal from AsyncStorage profile
+  const get_calorie_burned_goal = async () => {
+  let current_user = await AsyncStorage.getItem("currentUser");
+  if (current_user !== null && current_user !== ""){
+      let userdata = await AsyncStorage.getItem(current_user + "Fitness");
+      if (userdata !== null) {
+      var fitness = JSON.parse(userdata).fitnessLevel;
+      return fitness - 1.2;
+      }
+  }    
+  };
 
-     const get_calorie_goal = async () => {
-      let current_user = await AsyncStorage.getItem("currentUser");
-      if (current_user !== null && current_user !== ""){
-        let userdata = await AsyncStorage.getItem(current_user);
-        let fitnessdata = await AsyncStorage.getItem(current_user + "Fitness");
-        if (userdata !== null && fitnessdata !== null) {
-          var gender = JSON.parse(userdata).gender;
-          var weight = JSON.parse(userdata).weight;
-          var height = JSON.parse(userdata).height;
-          var age = JSON.parse(userdata).age;
-          var goal = JSON.parse(userdata).goal;
-          var fitness = JSON.parse(fitnessdata).fitnessLevel;
-          var calorie = 0;
-          if (gender === "Male") {
-            calorie = fitness * (10 * weight / 2.205 + 6.25 * height - 5 * age + 5);
-          }else if (gender === "Female") {
-            calorie = fitness * (10 * weight / 2.205 + 6.25 *height - 5 * age - 161);
-          }
-          if (goal === "lose weight") {
-            calorie -= 500;
-          }else if (goal === "gain weight") {
-            calorie += 500;
-          }
-          AsyncStorage.setItem(current_user + "Calorie", JSON.stringify(calorie));
-          return calorie;
-        }
-      }    
-    };
-
-
-     const get_calorie_burned_goal = async () => {
-      let current_user = await AsyncStorage.getItem("currentUser");
-      if (current_user !== null && current_user !== ""){
-          let userdata = await AsyncStorage.getItem(current_user + "Fitness");
-          if (userdata !== null) {
-          var fitness = JSON.parse(userdata).fitnessLevel;
-          return fitness - 1.2;
-          }
-      }    
-      };
-
-
-      
-  // var calorieBurnWeek = [1, 1, 1, 1, 1, 1, 1];
+  // calculates remaining steps needed to meet daily goal
   var temp_cal = (Math.round(calorieGoal * calorieBurnGoal) * 1000 / 40).toFixed(2) as unknown as number ;
-
-  /*
-  var temp_cal = Math.round(calorieGoal * calorieBurnGoal);
-  
-  calorieBurnWeek[d.getDay()] = (currentStep/(temp_cal * 1000/40) * 100).toFixed(2) as any;
-  if(n == "Sun"){
-    calorieBurnWeek[6] = (pastStep/(temp_cal * 1000/40)*100).toFixed(2) as any;
-  }
-  else{
-    calorieBurnWeek[d.getDay() - 1] = (pastStep/(temp_cal * 1000/40)*100).toFixed(2) as any;
-  }
-  */
-  
-
-  //var barChart = [daySteps[d.getDay()],temp_cal];
   
   return (
     <View style={styles.container}>
-
       <Text style={styles.name}>Exercise </Text>
       <Text></Text>
       <Text>Steps: {currentStep == 0? 1:currentStep}</Text> 
       <Text>Recommended calorie burned: {Math.round(calorieGoal * calorieBurnGoal)}</Text>
       <Text>Recommended steps: {Math.round(calorieGoal * calorieBurnGoal) * 1000/40}</Text> 
-      
       <Text></Text>
-
       <ScrollView style={{ backgroundColor: "#ffffff" }}>
-      <View>
-        <FitChart
-          title={"Daily Steps"}
-          data={
-            {
-              labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-              datasets: [
-                {
-                  data: [4581, 9874, 1243, 6150, 9873, 3658, 4892]
-                }
-              ]
-            }
-        }
-        propsForBackgroundLines={10000}
-        />
-      </View>
-
-
-
-    <View>
-    <StackedBar
-        title = {"Steps Goals"}
-        data = {
-          {
-          labels: ["","","Daily Goals"],
-          legend: ["Taken", "Goal"],
-          data: [[],[], [parseInt(currentStep == 0? 1:currentStep),parseInt(temp_cal)]],
-          barColors: ["#bab3f5", "#968cf5"]
+        <View>
+          <FitChart
+            title={"Daily Steps"}
+            data={
+              {
+                labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+                datasets: [
+                  {data: [4581, 9874, 1243, 6150, 9873, 3658, 4892]}
+                ]
+              }
           }
-        }
-  
-        />
-      </View>
-
-
-
-    </ScrollView>
-    
+          propsForBackgroundLines={10000}
+          />
+        </View>
+        <View>
+          <StackedBar
+              title = {"Steps Goals"}
+              data = {{
+                labels: ["","","Daily Goals"],
+                legend: ["Taken", "Goal"],
+                data: [[],[], [parseInt(currentStep == 0? 1:currentStep),parseInt(temp_cal)]],
+                barColors: ["#bab3f5", "#968cf5"]
+              }}
+          />
+        </View>
+      </ScrollView>
     </View>
-        
   );
 }
-
-
-// <Text>Pedometer.isAvailableAsync(): {isPedometer}</Text>
-
 
 const styles = StyleSheet.create({
   container: {

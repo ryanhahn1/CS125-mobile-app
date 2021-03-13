@@ -2,22 +2,11 @@ import React, { useState, useEffect } from 'react';
 import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert, Modal, Button} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import axios from 'axios';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FitChart from "../components/FitChart";
-// import ExerciseRecommendation from '../screens/ExerciseRecommendation';
-// import Modal from 'react-native-modal';
-import {
-  DateRangePicker,
-  DatePicker,
-  TimePicker,
-  DateTimePicker,
-  ListPicker,
-  NumberPicker,
-} from 'react-native-ultimate-modal-picker';
 
-
+// component for progress tab
 export default function TabThreeScreen() {
   const [isModalVisible, setModalVisible] = useState(false);
   const [data, setData] = useState([] as any[]);
@@ -25,6 +14,7 @@ export default function TabThreeScreen() {
   var [weightList, setWeightList] = useState<any | null>([]);
   const isFocused = useIsFocused(); 
 
+  // on tab render, update information from AsyncStorage
   const updateInfo = async () => {
     setData([]);
     get_user_weight()
@@ -42,50 +32,16 @@ export default function TabThreeScreen() {
     updateInfo();
   }, [isFocused]);
 
-
-  // function getExerciseData() {
-  //   const url = "https://trackapi.nutritionix.com/v2/natural/exercise";
-  //   axios.post(url, {
-  //     body: {
-  //       "query": "ran 4 miles",
-  //       "gender":"female",
-  //       "weight_kg":72.5,
-  //       "height_cm":167.64,
-  //       "age":30
-  //     },
-  //     headers: {
-  //       "x-app-id": "c813a65e",
-  //       "x-app-key": "bcba6cff6834136cd676de29587f3827",
-  //       "Content-Type": "application/json"
-  //     }
-  //   }).then((response) => {
-  //     console.log(response);
-  //   })
-  //   .catch((response) => {
-  //       console.log(response);
-  //   })
-  // }
-
-
-  const sampleData = [
-    {weight: "150", date: 10, month: 1, key: 1},
-    {weight: "149", date: 17, month: 1, key: 1},
-    {weight: "148", date: 24, month: 1, key: 1},
-    {weight: "147", date: 2, month: 2, key: 2},
-    {weight: "146", date: 10, month: 2, key: 3},
-  ]
-
+  // retrieves the user's weight entries for display from AsyncStorage
   const get_user_weight_list = async() =>{
     var temp = [0,0,0,0,0,0];
     var occurences = [0,0,0,0,0,0]
     var i;
-
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
         let userdata = await AsyncStorage.getItem(current_user);
         if (userdata !== null && userdata !== "") {
-        var temp_entries = JSON.parse(userdata).entries; // list
-        // var temp_entries = sampleData;
+        var temp_entries = JSON.parse(userdata).entries;
         if (temp_entries.length !== 0) {
           for(i = 0; i < temp_entries.length; i++){
             temp[temp_entries[i].month] += parseInt(temp_entries[i].weight);
@@ -101,7 +57,8 @@ export default function TabThreeScreen() {
         } 
     }
   };
-    
+  
+  // retrieves the user's current weight from AsyncStorage
   async function get_user_weight() {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
@@ -113,6 +70,7 @@ export default function TabThreeScreen() {
     }
   };
 
+  // retrieves updates user's current weight in AsyncStorage profile and adds weight to entries
   async function set_user_data() {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
@@ -132,9 +90,7 @@ export default function TabThreeScreen() {
     }
   };
 
-
-  
-
+  // updates list of weight entries that is displayed
   const load_user_data = async () => {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
@@ -144,9 +100,7 @@ export default function TabThreeScreen() {
         setData(parsed);
       }
     }    
-    // setData(sampleData);
   };
-
 
   return (
     <SafeAreaView style={styles.container}>
@@ -156,24 +110,18 @@ export default function TabThreeScreen() {
           <Text style={{ color: "white"}}>Add Weight</Text>
         </TouchableOpacity>
       </View>
+      {/* graph of weight progress */}
       <View style={{height: 242}} >
           <FitChart
             title={""}
-            data={
-              {
-                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-                
-                datasets: [
-                  {
-                    data: weightList
-                  }
-                ]
-              }
-            }
+            data={{
+              labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+              datasets: [{data: weightList}]
+            }}
             baseline={100}
           />
       </View>
-
+      {/* modal that appears when new weight entry is being added */}
       <SafeAreaView style={styles.centeredView}>
         <Modal 
           animationType="slide"
@@ -191,7 +139,6 @@ export default function TabThreeScreen() {
                   onPress={() => {set_user_data();setModalVisible(false)}} />
               </View>
             </View>
-
             <TouchableOpacity style={styles.profileInfo}>
             <View style={styles.infobox}>
                 <Text style={{ color: "black"}}>Weight</Text>
@@ -209,9 +156,7 @@ export default function TabThreeScreen() {
           </SafeAreaView>
         </Modal>
       </SafeAreaView>
-      
-      {/* data.slice(Math.max(data.length - 3, 0)) */}
-
+      {/* list of most recent 4 weight entries */}
       <Text style={[styles.title, {paddingBottom: 30}]}>Entries</Text>
       <FlatList
           ListFooterComponent={
@@ -224,17 +169,12 @@ export default function TabThreeScreen() {
                 <Text >{item.month + 1 + "/" + item.date}</Text>
               </View>
             </View>
-          )
+            )
           }
           keyExtractor={(item) => item.key}
       />
-     
-      
-
     </SafeAreaView>
-  );
-  // }
-  
+  );  
 }
 
 const styles = StyleSheet.create({
@@ -244,15 +184,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   profileInfo: {
-    // marginTop: 16,
-    // marginHorizontal: 32,
     alignSelf: "stretch",
     paddingVertical: 12,
     paddingHorizontal: 14,
     borderWidth: 1,
     borderRadius: 1,
     backgroundColor: "white",
-    // borderColor: "gray"
   },
   insideModal: {
     flex: 1,
@@ -260,7 +197,6 @@ const styles = StyleSheet.create({
   },
   centeredView: {
     flex: 1,
-    // marginTop: 22
   },
   container: {
     flex: 1,
@@ -279,7 +215,6 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     marginTop: 0,
-    // alignSelf: "stretch",
     fontSize: 20,
     paddingVertical: 12,
     paddingHorizontal: 14,

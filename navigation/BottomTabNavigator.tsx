@@ -22,12 +22,14 @@ import SurveyScreen from '../screens/SurveyScreen';
 import { Center } from '../src/Center';
 import { withSafeAreaInsets } from 'react-native-safe-area-context';
 
+// Sign up screen element componenet
 function HomeScreen() {
   const navigation = useNavigation();
   const [name, setName] = React.useState<any | null>(null);
   const [password, setPassword] = React.useState<any | null>(null);
   const [error, setError] = React.useState<any | null>("");
 
+  // intitialize the AsyncStorage directory for user profile
   const save = async () => {
     try {
       await AsyncStorage.setItem(
@@ -46,6 +48,8 @@ function HomeScreen() {
       alert(err);
     }
   };
+
+  // initialize the AsyncStorage directory for user account info
   const addAccount = async () => {
     try {
       await AsyncStorage.setItem(
@@ -56,25 +60,8 @@ function HomeScreen() {
       alert(err);
     }
   };
-  const load = async () => {
-    try {
-      let userdata = await AsyncStorage.getItem(name);
-      if (userdata !== null) {
-        
-      }
-    } catch (err) {
-      alert(err);
-    }
-  };
-  const remove = async () => {
-    try {
-      await AsyncStorage.removeItem(name)
-    } catch (err) {
-      alert(err)
-    } finally {
-      setName("")
-    }
-  }
+
+  // use the data in the text fields to create a new account after checking if input is valid
   const createAccount = async () => {
     try {
       if (name == "" || name == null) {
@@ -114,9 +101,6 @@ function HomeScreen() {
             <Text style={{ color: "white"}}>Create Account</Text>
           </TouchableOpacity>
           <Text>{error}</Text>
-          <TouchableOpacity style={styles.button} onPress={() => remove()}>
-            <Text style={{ color: "white"}}>Remove Account</Text>
-          </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
             <Text style={{ color: "white"}}>Already have an account? Log in</Text>
           </TouchableOpacity>
@@ -166,23 +150,14 @@ function BottomTabNavigator() {
       <BottomTab.Screen
         name="Diet"
         component={TabOneNavigator}
-        // options={{
-        //   tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
-        // }}
       />
       <BottomTab.Screen
         name="Exercise"
         component={TabTwoNavigator}
-        // options={{
-        //   // tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
-        // }}
       />
       <BottomTab.Screen
         name="Progress"
         component={TabThreeNavigator}
-        // options={{
-        //   tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
-        // }}
       />
       <BottomTab.Screen 
         name="Profile"
@@ -198,12 +173,15 @@ function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']
   return <Ionicons size={30} style={{ marginBottom: -3 }} {...props} />;
 }
 
+// Sign in screen element component
 function Login() {
   const navigation = useNavigation();
   const [name, setName] = React.useState<any | null>(null);
   const [password, setPassword] = React.useState<any | null>(null);
   const [error, setError] = React.useState<any | null>("");
-  const isFocused = useIsFocused(); 
+  const isFocused = useIsFocused();
+
+  // on page render, navigate to app home page if the user is already logged in
   React.useEffect(() => {
     const updateInfo = async () => {
       AsyncStorage.getItem("currentUser")
@@ -216,6 +194,7 @@ function Login() {
     updateInfo();
   }, [isFocused]);
   
+  // use the data in the text fields to log in to account after checking if input is valid
   const login = async () => {
     try {
       if (name == "" || name == null){
@@ -244,6 +223,7 @@ function Login() {
       alert(err);
     }
   };
+  
   return (
       <Center>
           <Text style={styles.name}> Log In </Text>

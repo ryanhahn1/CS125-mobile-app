@@ -9,9 +9,7 @@ import {
 } from 'react-native-ultimate-modal-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-// import DateTimePickerModal from "react-native-modal-datetime-picker";
-
-
+// Component for the survey that 
 export default function SurveyScreen() {
   const navigation = useNavigation();
   var [input_goal, setGoal] = useState<any | null>(null);
@@ -45,6 +43,7 @@ export default function SurveyScreen() {
     "Athlete exercise 6-7 times a week" : 1.725,
   };
   
+  // updates AsyncStorage user profile information with the user's input for fitness goal
   const set_fitness_goal = async (fitness: string) => {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
@@ -55,6 +54,7 @@ export default function SurveyScreen() {
     }
   };
 
+  // updates AsyncStorage user profile information with the user's input all other fields
   async function save_user_info() {
     let current_user = await AsyncStorage.getItem("currentUser");
     if (current_user !== null && current_user !== ""){
@@ -72,6 +72,7 @@ export default function SurveyScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.name}>Please Input Your Health Information</Text>
+      {/* height */}
       <TouchableOpacity style={styles.profileInfo}>
         <View style={styles.infobox}>
             <Text style={{ color: "black"}}>Height (cm)</Text>
@@ -86,7 +87,7 @@ export default function SurveyScreen() {
             </View>
         </View>
       </TouchableOpacity>
-
+      {/* weight */}
       <TouchableOpacity style={styles.profileInfo}>
         <View style={styles.infobox}>
             <Text style={{ color: "black"}}>Weight (lbs)</Text>
@@ -101,7 +102,7 @@ export default function SurveyScreen() {
             </View>
         </View>
       </TouchableOpacity>
-
+      {/* age */}
       <TouchableOpacity style={styles.profileInfo}>
         <View style={styles.infobox}>
             <Text style={{ color: "black"}}>Age (years old)</Text>
@@ -116,18 +117,19 @@ export default function SurveyScreen() {
             </View>
         </View>
       </TouchableOpacity>
-
+      {/* gender */}
       <ListPicker
         title="Gender"
         items={genderList}
         onChange={(item) => setGender(item)}
       />
-
+      {/* weight goal */}
       <ListPicker
         title="Goal"
         items={goalList}
         onChange={(item) => setGoal(item)}
       />
+      {/* fitness goal */}
       <ListPicker
         title="Fitness"
         items={fitnessList}
@@ -159,15 +161,12 @@ const styles = StyleSheet.create({
     fontWeight: "300",
   },
   profileInfo: {
-    // marginTop: 16,
-    // marginHorizontal: 32,
     alignSelf: "stretch",
     paddingVertical: 12,
     paddingHorizontal: 14,
     borderWidth: 1,
     borderRadius: 1,
     backgroundColor: "white",
-    // borderColor: "gray"
   },
   input: {
     borderWidth: 1,

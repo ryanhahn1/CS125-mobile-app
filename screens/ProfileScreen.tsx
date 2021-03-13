@@ -14,6 +14,7 @@ export default function ProfileScreen() {
   var [input_age, setAge] = useState<any | null>(null);
   const isFocused = useIsFocused(); 
   
+  // component for profile tab
   useEffect(() => {
     const updateInfo = async () => {
       get_user_name()
@@ -199,9 +200,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   infovalue: {
-    // textAlign: "right",
     justifyContent: "space-between",
-    // paddingHorizontal: 14,
   },
   container: {
     flex: 1,
@@ -209,15 +208,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   profileInfo: {
-    // marginTop: 16,
-    // marginHorizontal: 32,
     alignSelf: "stretch",
     paddingVertical: 12,
     paddingHorizontal: 14,
     borderTopWidth: 1,
     borderRadius: 1,
     backgroundColor: "white",
-    // borderColor: "gray"
   },
   title: {
     fontSize: 20,

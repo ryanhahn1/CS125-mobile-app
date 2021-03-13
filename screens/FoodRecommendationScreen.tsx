@@ -11,13 +11,15 @@ import FoodSearchScreen from './FoodSearchScreen';
 
 export default function FoodRecommendationScreen() {
   const navigation = useNavigation();
-  const [inputFood, setInputFood] = useState("");
-  const [recommendations, setRecommendations] = useState([] as any[]);
-  const [foodSelect, setFoodSelect] = useState<any | null>(null);
+  const [inputFood, setInputFood] = useState(""); // user query in search field
+  const [recommendations, setRecommendations] = useState([] as any[]); // list of food recommendation entries to display on screen
+  const [foodSelect, setFoodSelect] = useState<any | null>(null); // food entry that the user taps to log meal
   const [error, setError] = useState<any | null>("");
-  const [data, setData] = useState([] as any[]);
+  const [data, setData] = useState([] as any[]); // list of food search entries to display on screen
   const isFocused = useIsFocused(); 
-  const [displayList, setDisplayList] = useState(1); // 1 for recommendation, 0 for search
+  const [displayList, setDisplayList] = useState(1); // determines which UI elements to render: 1 for recommendations, 0 for search results
+
+  // on page render, update the recommendations for the user
   const updateInfo = async () => {
     setFoodSelect([]);
     getRecommendation()
@@ -25,7 +27,6 @@ export default function FoodRecommendationScreen() {
         setRecommendations(d);
     })
   }
-  //const [current_user, setCurrent_user] = React.useState(await AsyncStorage.getItem("currentUser"));
   useEffect(() => {
     updateInfo();
   }, [isFocused]);
@@ -54,19 +55,16 @@ export default function FoodRecommendationScreen() {
     "image": string
   }
 
+  // retrieves Edamam API call results for the user's food query and updates the list on screen
   const searchFood = async() => {
     setData([]);
     if (inputFood !== "" && inputFood !== null){
-      console.log("api call function");
       const url = `https://api.edamam.com/api/food-database/parser?app_id=3c7d8606&app_key=68f20074d40b4aca57bb52d80511aebb&ingr=${inputFood}`
       axios.get(url)
         .then(response => {
           if (!response.data.hints.length) {
-            //console.log("no food found");
             setError("no food found");
           }
-          console.log("api call success");
-          //console.log(JSON.stringify(response.data.hints));
           var foods = response.data.hints;
           var displayFoods = [] as any[];
           var seenIds = new Set;
@@ -79,12 +77,12 @@ export default function FoodRecommendationScreen() {
             }
             i++;
           }
+          // update list data
           setData(displayFoods);
           setError("");
           setDisplayList(0);
         })
         .catch(error => setError(error.response.status))
-        //console.log("api call fail");
     }
     else{
       setError("Enter a food");
@@ -92,6 +90,7 @@ export default function FoodRecommendationScreen() {
     
   }
 
+  // comparison function to evaluate which between two foods is closer to meal goal, used for recommendation
   const compareFoods = async(a: foodEntry, b: foodEntry) => {
     var user = null;
     var calorieGoal = null;
@@ -115,6 +114,7 @@ export default function FoodRecommendationScreen() {
     return 0;
   }
 
+  // retrieves the top 5 recommendations for the user in sorted order
   const getRecommendation = async () => {
     var user = null;
     try {
@@ -134,8 +134,10 @@ export default function FoodRecommendationScreen() {
     }
   };
 
+  // takes food search entry as parameter and adds it to the AsyncStorage data set for foods the user has eaten
   const addSearch = async(food: foodObj) => {    
     var user = null;
+    // check that user is logged in
     try {
       user = await AsyncStorage.getItem("currentUser");
     } catch (err) {
@@ -144,14 +146,15 @@ export default function FoodRecommendationScreen() {
     if (user !== null){
       try {
         let userdata = await AsyncStorage.getItem("Food" + user);
-        // pull and add to food info
+        // retrieve current food data from AsyncStorage
         if (userdata !== null){
           var parsedList = JSON.parse(userdata).entries;
           var i = 0;
           var found = 0;
           let day = new Date();
+          // check if the food has already been eaten
           for (i = 0; i < parsedList.length; i++){
-            // food already exists in storage
+            // food already exists in meal logs, so add the date to the list of times eaten
             console.log(parsedList[i]);
             if (parsedList[i].foodId == food.foodId){
               parsedList[i].dates.push(Date.now())
@@ -159,7 +162,7 @@ export default function FoodRecommendationScreen() {
               setError("food: " + parsedList[i].label + ", this is the "+ parsedList[i].dates.length + " time");
             }
           }
-          // first time eating
+          // food does not already exists in meal logs, so add the new entry
           if (!found){
             parsedList.push({
               foodId: food.foodId,
@@ -171,7 +174,7 @@ export default function FoodRecommendationScreen() {
           }
           AsyncStorage.setItem("Food" + user, JSON.stringify({entries: parsedList}))
         }
-        // initialize food info storage
+        // first time the user has logged any meal, so initialize the AsyncStorage directory
         else{
           await AsyncStorage.setItem(
             "Food" + user,
@@ -196,8 +199,10 @@ export default function FoodRecommendationScreen() {
     }
   }
 
+  // takes food recommendation entry as parameter and adds it to the AsyncStorage data set for foods the user has eaten
   const addFood = async(food: foodEntry) => {    
     var user = null;
+    // check that user is logged in
     try {
       user = await AsyncStorage.getItem("currentUser");
     } catch (err) {
@@ -206,14 +211,15 @@ export default function FoodRecommendationScreen() {
     if (user !== null){
       try {
         let userdata = await AsyncStorage.getItem("Food" + user);
-        // pull and add to food info
+        // retrieve current food data from AsyncStorage
         if (userdata !== null){
           var parsedList = JSON.parse(userdata).entries;
           var i = 0;
           var found = 0;
           let day = new Date();
+          // check if the food has already been eaten
           for (i = 0; i < parsedList.length; i++){
-            // food already exists in storage
+            // food already exists in meal logs, so add the date to the list of times eaten
             console.log(parsedList[i]);
             if (parsedList[i].foodId == food.foodId){
               parsedList[i].dates.push(Date.now())
@@ -221,7 +227,7 @@ export default function FoodRecommendationScreen() {
               setError("food: " + parsedList[i].label + ", this is the "+ parsedList[i].dates.length + " time");
             }
           }
-          // first time eating
+          // food does not already exists in meal logs, so add the new entry
           if (!found){
             parsedList.push({
               foodId: food.foodId,
@@ -233,7 +239,7 @@ export default function FoodRecommendationScreen() {
           }
           AsyncStorage.setItem("Food" + user, JSON.stringify({entries: parsedList}))
         }
-        // initialize food info storage
+        // first time the user has logged any meal, so initialize the AsyncStorage directory
         else{
           await AsyncStorage.setItem(
             "Food" + user,
@@ -258,23 +264,9 @@ export default function FoodRecommendationScreen() {
     }
 }
 
-  const logout = async () => {
-    try {
-      await AsyncStorage.removeItem("currentUser");
-      navigation.goBack();
-    } catch (err) {
-      alert(err);
-    }
-  };
-
   return (
     <View style={styles.container}>
-      {/* <TextInput
-          style={styles.input}
-          onChangeText = {(text) => setInputFood(text)}
-          placeholder = {"Search for a food"}
-          onSubmitEditing = {() => {searchFood()}}/> */}
-        {/* <Text style={{ color: "black", fontWeight: 'bold', fontSize: 20, margin: 15}}>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</Text> */}
+      {/* render the search bar and the back button if on search results screen */}
         {displayList ?
         <View style={styles.searchDiv}>
           <TextInput
@@ -295,15 +287,15 @@ export default function FoodRecommendationScreen() {
             onSubmitEditing = {() => {searchFood()}}/>
         </View>
       }
-      {/* <TouchableOpacity style={styles.button} onPress={() => logout()}>
-        <Text style={{ color: "white"}}>Log out!</Text>
-      </TouchableOpacity> */}
-      {/* <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("FoodSearch")}>
-      <Text style={{ color: "white"}}>Food Search</Text>
-      </TouchableOpacity> */}
+    {/* render either the food recommendations or the food search results */}
+      {/* Heading */}
       <View style={styles.recommendations}>
-        {displayList ? <Text style={{ color: "black", fontWeight: 'bold', fontSize: 20, margin: 15}}>Recommended for you</Text> : <Text style={{ color: "black", fontWeight: 'bold', fontSize: 20, margin: 15}}>Search results</Text>}
-        {displayList ? 
+        {displayList ?
+          <Text style={{ color: "black", fontWeight: 'bold', fontSize: 20, margin: 15}}>Recommended for you</Text>
+          :
+          <Text style={{ color: "black", fontWeight: 'bold', fontSize: 20, margin: 15}}>Search results</Text>}
+        {displayList ?
+        /* Recommendation list */
         <FlatList style={styles.foodList}
           data={recommendations}
           ListFooterComponent={
@@ -322,6 +314,7 @@ export default function FoodRecommendationScreen() {
           keyExtractor={(item) => item.foodId}
           ></FlatList>
         :
+        /* Search result list */
         <FlatList style={styles.foodList}
           data={data}
           ListFooterComponent={
@@ -385,7 +378,6 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   foodEntry: {
-    // marginHorizontal: 32,
     alignSelf: "stretch",
     paddingVertical: 12,
     paddingHorizontal: 0,
@@ -394,7 +386,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderColor: "#575DD9",
     flexDirection: 'row',
-    // borderRadius: 6,
   },
   foodImage: {
     borderRadius: 50,
@@ -402,7 +393,6 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     right: 0,
-    // flex: 1
   },
   foodList: {
     alignSelf: "stretch",
@@ -426,10 +416,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     marginTop: 0,
     marginHorizontal: 0,
-    // backgroundColor: "white",
     flexDirection: 'row',
     height: 82,
-    // backgroundColor: 'red',
   },
   smallButton: {
     backgroundColor: "#575DD9",
